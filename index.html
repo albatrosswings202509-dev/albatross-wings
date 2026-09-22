@@ -292,7 +292,7 @@
 
   <div class="setup-banner" id="setupBanner">
     One more step: open this file in a text editor and replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code>
-    with your Apps Script Web app URL. Until then this shows sample data.
+    with your Apps Script Web app URL.
   </div>
 
   <main>
@@ -425,7 +425,7 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxAo2jukOcQHqstW0-PXmgyV3XEUS6tNAtQ6qngPrzjcT5xADv_cpjN6u118g9OLK8P/exec";
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
 const REFRESH_INTERVAL_MS = 30000;
 const EMPATHY_AGENT_TARGET = 0.88;   
 const EMPATHY_PARAM_TARGET = 0.875;  
@@ -434,7 +434,22 @@ const CFS_TARGET = 0.90;
 
 let DATA = { agentAudits: [], empathyWise: [], ort: [], Alignment: [] };
 
-// ---------- TARGETED ALIGNMENT FILTERING ----------
+// ---------- ROBUST COLUMN VALUE EXTRACTOR ----------
+function getCleanVal(row, possibleKeys) {
+  if (!row || typeof row !== 'object') return '';
+  const rowKeys = Object.keys(row);
+  for (const pKey of possibleKeys) {
+    const target = pKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const actualKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
+    if (actualKey && row[actualKey] !== undefined && row[actualKey] !== null) {
+      const val = String(row[actualKey]).trim();
+      if (val !== '') return val;
+    }
+  }
+  return '';
+}
+
+// ---------- STRICT ALIGNMENT FILTERING ----------
 function getAlignmentList() {
   if (!DATA) return [];
   if (Array.isArray(DATA.Alignment)) return DATA.Alignment;
@@ -446,12 +461,16 @@ function getAgentIdentifiers(row) {
   const ids = new Set();
   if (!row || typeof row !== 'object') return ids;
 
-  // Exact primary keys from sheet: 'VDI ID' and 'Name'
-  const targetKeys = ['VDI ID', 'Name', 'VDI', 'Agent Name', 'Agent ID', 'EID'];
+  // Comprehensive primary identifier aliases
+  const targetKeys = [
+    'vdi id', 'vdi', 'vdi_id', 'vdiid',
+    'name', 'agent name', 'agent_name', 'agentname', 'agent',
+    'eid', 'emp id', 'employee name', 'emp name'
+  ];
 
   Object.keys(row).forEach(k => {
     const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const isMatched = targetKeys.some(tk => tk.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanK);
+    const isMatched = targetKeys.some(tk => tk.replace(/[^a-z0-9]/g, '') === cleanK);
     
     if (isMatched) {
       const val = row[k];
@@ -479,10 +498,10 @@ function alignmentAgentKeys() {
 
 function isAlignedRecord(r) {
   const alignList = getAlignmentList();
-  if (!alignList || alignList.length === 0) return true; // Fallback
+  if (!alignList || alignList.length === 0) return true; // Fallback if alignment tab missing
 
   const validKeys = alignmentAgentKeys();
-  if (validKeys.size === 0) return false;
+  if (validKeys.size === 0) return true;
 
   const recordKeys = getAgentIdentifiers(r);
   for (let key of recordKeys) {
@@ -491,27 +510,13 @@ function isAlignedRecord(r) {
   return false;
 }
 
+// FILTERED DATASETS (Unaligned records are completely purged)
 function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
 function agentWiseAudits(){ return agentWiseRows(DATA.agentAudits); }
 function agentWiseOrt(){ return agentWiseRows(DATA.ort); }
 function agentWiseEmpathy(){ return agentWiseRows(DATA.empathyWise); }
 
-// ---------- Key Value Extractor ----------
-function getCleanVal(row, possibleKeys) {
-  if (!row) return '';
-  const rowKeys = Object.keys(row);
-  for (const pKey of possibleKeys) {
-    const target = pKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const actualKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
-    if (actualKey && row[actualKey] !== undefined && row[actualKey] !== null) {
-      const val = String(row[actualKey]).trim();
-      if (val !== '') return val;
-    }
-  }
-  return '';
-}
-
-// ---------- helpers ----------
+// ---------- HELPERS ----------
 const numOf = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const pct = (n) => (n*100).toFixed(1) + '%';
 const isPass = (v) => String(v||'').trim().toLowerCase() === 'pass';
@@ -524,16 +529,24 @@ function normPct(v){
   if(typeof v === 'string' && v.includes('%')) return parseFloat(v.replace('%','')) / 100;
   const n = parseFloat(v);
   if(isNaN(n)) return null;
-  return n;
+  return n > 1 ? n / 100 : n;
 }
 
 function parseDurationHours(v){
-  if(!v || typeof v !== 'string') return 0;
-  const s = v.trim();
-  if(s.toLowerCase().startsWith('no ')) return 0;
-  const parts = s.split(':').map(Number);
-  if(parts.length !== 3 || parts.some(isNaN)) return 0;
-  return parts[0] + parts[1]/60 + parts[2]/3600;
+  if(!v) return 0;
+  const s = String(v).trim();
+  if(s.toLowerCase().startsWith('no') || s === '0' || s === '') return 0;
+  
+  // Format hh:mm:ss
+  if(s.includes(':')){
+    const parts = s.split(':').map(Number);
+    if(parts.length === 3 && !parts.some(isNaN)) return parts[0] + parts[1]/60 + parts[2]/3600;
+    if(parts.length === 2 && !parts.some(isNaN)) return parts[0]/60 + parts[1]/3600;
+  }
+  
+  // Decimal or numeric hours
+  const num = parseFloat(s);
+  return isNaN(num) ? 0 : num;
 }
 
 function fmtHoursMin(hoursDecimal){
@@ -543,7 +556,7 @@ function fmtHoursMin(hoursDecimal){
   return h>0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-// ---------- data loading ----------
+// ---------- DATA LOADING ----------
 async function loadData(manual=false){
   const btn = document.getElementById('refreshBtn');
   const chip = document.getElementById('liveChip');
@@ -581,12 +594,12 @@ async function loadSampleData(){
   catch(e){ return { agentAudits:[], empathyWise:[], ort:[], Alignment:[] }; }
 }
 
-// ---------- sidebar toggle ----------
+// ---------- SIDEBAR TOGGLE ----------
 function toggleSidebar(){
   document.body.classList.toggle('sidebar-collapsed');
 }
 
-// ---------- page routing ----------
+// ---------- PAGE ROUTING ----------
 const PAGE_META = {
   overview:   {title:'Dashboard Overview', sub:'Team performance summary'},
   agent:      {title:'Agent Performance', sub:'From IB Agent Wise — audits, pass/fail, empathy vs 88% target'},
@@ -613,7 +626,7 @@ function renderCurrentPage(){
     document.getElementById('footerNote').textContent = 'No data loaded yet.';
   } else {
     document.getElementById('footerNote').textContent =
-      `${agentWiseAudits().length} aligned audits (${DATA.agentAudits.length} total raw audits) · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
+      `${agentWiseAudits().length} aligned audits (${DATA.agentAudits.length} raw) · ${agentWiseOrt().length} aligned ORT records · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
   }
   populateAgentSelect();
   if(CURRENT_PAGE==='overview') renderOverview();
@@ -634,17 +647,17 @@ function kpiCard(container, label, value, iconClass, icon, sub='', subClass=''){
 
 // ============ OVERVIEW ============
 function agentAggregates(){
-  const byAgent = groupBy(agentWiseAudits(), r => getCleanVal(r, ['Agent Name', 'Name', 'Agent']) || 'Unknown');
+  const byAgent = groupBy(agentWiseAudits(), r => getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'VDI ID']) || 'Unknown');
   const out = [];
   byAgent.forEach((rows, agent) => {
     if(!agent || agent==='Unknown') return;
     const total = rows.length;
-    const pass = rows.filter(r=>isPass(r['Pass or Fail'])).length;
+    const pass = rows.filter(r=>isPass(getCleanVal(r, ['Pass or Fail', 'Result']))).length;
     const fail = total - pass;
-    const ep = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Pass Count']),0);
-    const ef = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
+    const ep = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Pass Count', 'Emp Pass', 'Empathy Pass'])),0);
+    const ef = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Fail Count', 'Emp Fail', 'Empathy Fail'])),0);
     const empPct = (ep+ef)>0 ? ep/(ep+ef) : null;
-    const avgScore = rows.reduce((s,r)=>s+numOf(r['Evaluation Score']),0) / total;
+    const avgScore = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Evaluation Score', 'Score'])),0) / total;
     out.push({agent, total, pass, fail, failPct: fail/total, ep, ef, empPct, avgScore});
   });
   return out;
@@ -654,11 +667,11 @@ function renderOverview(){
   const box = document.getElementById('kpiOverview'); box.innerHTML='';
   const rows = agentWiseAudits();
   const total = rows.length;
-  const passCount = rows.filter(r=>isPass(r['Pass or Fail'])).length;
+  const passCount = rows.filter(r=>isPass(getCleanVal(r, ['Pass or Fail', 'Result']))).length;
   const failCount = total - passCount;
-  const critFree = rows.length ? rows.filter(r=>isPass(r['Critical Error'])).length/rows.length : 0;
-  const epSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Pass Count']),0);
-  const efSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
+  const critFree = rows.length ? rows.filter(r=>isPass(getCleanVal(r, ['Critical Error', 'Critical']))).length/rows.length : 0;
+  const epSum = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Pass Count', 'Emp Pass'])),0);
+  const efSum = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Fail Count', 'Emp Fail'])),0);
   const empPct = (epSum+efSum)>0 ? epSum/(epSum+efSum) : 0;
 
   kpiCard(box, 'Total Audits (Aligned)', total.toLocaleString(), 'blue', '▤');
@@ -670,7 +683,7 @@ function renderOverview(){
 
   // Skill volume
   const skillBox = document.getElementById('ovSkillBars'); skillBox.innerHTML='';
-  const bySkill = groupBy(rows, r=>r['Skill']||'Unknown');
+  const bySkill = groupBy(rows, r=>getCleanVal(r, ['Skill'])||'Unknown');
   const skillEntries = [...bySkill.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
   const maxSkill = Math.max(1,...skillEntries.map(([,r])=>r.length));
   skillEntries.forEach(([skill,srows])=>{
@@ -679,13 +692,13 @@ function renderOverview(){
     const track = el('div',{class:'bar-track'});
     track.appendChild(el('div',{class:'bar-fill blue', style:`width:${Math.max(2,(srows.length/maxSkill)*100)}%`}));
     row.appendChild(track);
-    row.appendChild(el('div',{class:'bar-val'}, srows.length+' · '+pct(srows.filter(r=>isPass(r['Pass or Fail'])).length/srows.length)));
+    row.appendChild(el('div',{class:'bar-val'}, srows.length+' · '+pct(srows.filter(r=>isPass(getCleanVal(r, ['Pass or Fail']))).length/srows.length)));
     skillBox.appendChild(row);
   });
 
   // Site volume
   const siteBox = document.getElementById('ovSiteBars'); siteBox.innerHTML='';
-  const bySite = groupBy(rows, r=>r['Site']||'Unknown');
+  const bySite = groupBy(rows, r=>getCleanVal(r, ['Site'])||'Unknown');
   const siteEntries = [...bySite.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
   const maxSite = Math.max(1,...siteEntries.map(([,r])=>r.length));
   siteEntries.forEach(([site,srows])=>{
@@ -700,8 +713,8 @@ function renderOverview(){
 
   // Failure reasons
   const failBox = document.getElementById('ovFailReasons'); failBox.innerHTML='';
-  const critFails = rows.filter(r=>!isPass(r['Critical Error']));
-  const rtcFails = rows.filter(r=>!isPass(r['RTC']));
+  const critFails = rows.filter(r=>!isPass(getCleanVal(r, ['Critical Error'])));
+  const rtcFails = rows.filter(r=>!isPass(getCleanVal(r, ['RTC'])));
   const reasonCounts = [
     {label:'Critical Error fails', count:critFails.length},
     {label:'RTC fails', count:rtcFails.length},
@@ -764,7 +777,7 @@ function renderAgentPage(){
   const spotlight = document.getElementById('agentSpotlight');
 
   const box = document.getElementById('kpiAgent'); box.innerHTML='';
-  const totalAudits = aggs.reduce((s,a)=>s+total,0);
+  const totalAudits = aggs.reduce((s,a)=>s+a.total,0);
   const totalFail = aggs.reduce((s,a)=>s+a.fail,0);
   const teamEp = aggs.reduce((s,a)=>s+a.ep,0), teamEf = aggs.reduce((s,a)=>s+a.ef,0);
   const teamEmpPct = (teamEp+teamEf)>0 ? teamEp/(teamEp+teamEf) : 0;
@@ -812,7 +825,16 @@ function renderAgentPage(){
 }
 
 // ============ EMPATHY ANALYSIS PAGE ============
-const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speech Clarity / Clarity of Communication','Proper Listening','Personalization','Time / Hold Management','Emotional Tone with Courtesy','Closing Courtesy'];
+const EMPATHY_PARAMS = [
+  'Warm Greetings',
+  'Acknowledgment & Understanding',
+  'Speech Clarity / Clarity of Communication',
+  'Proper Listening',
+  'Personalization',
+  'Time / Hold Management',
+  'Emotional Tone with Courtesy',
+  'Closing Courtesy'
+];
 
 function renderEmpathyPage(){
   const rows = agentWiseEmpathy();
@@ -821,9 +843,10 @@ function renderEmpathyPage(){
   EMPATHY_PARAMS.forEach(param => {
     let wsum=0, csum=0;
     rows.forEach(r=>{
-      const audit = numOf(getCleanVal(r, ['Audit Count', 'Audits']));
-      const val = normPct(getCleanVal(r, [param]));
+      const audit = numOf(getCleanVal(r, ['Audit Count', 'Audits', 'Audit']));
+      const val = normPct(getCleanVal(r, [param, param.split('/')[0].trim(), param.split(' ')[0].trim()]));
       if(audit>0 && val!==null){ wsum += val*audit; csum += audit; }
+      else if(val!==null && audit===0){ wsum += val; csum += 1; }
     });
     const avg = csum>0 ? wsum/csum : null;
     const isRed = avg!==null && avg < EMPATHY_PARAM_TARGET;
@@ -840,14 +863,14 @@ function renderEmpathyPage(){
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
   if(rows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No aligned agent data.</td>`)); return; }
   rows.forEach(r=>{
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID']);
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID', 'VDI']);
     let cells = `<td>${name}</td>`;
     EMPATHY_PARAMS.forEach(p=>{
-      const val = normPct(getCleanVal(r, [p]));
+      const val = normPct(getCleanVal(r, [p, p.split('/')[0].trim(), p.split(' ')[0].trim()]));
       if(val===null){ cells += `<td class="num">—</td>`; }
       else { cells += `<td class="num ${val<EMPATHY_PARAM_TARGET?'cell-red':''}">${pct(val)}</td>`; }
     });
-    cells += `<td class="num">${getCleanVal(r, ['Audit Count', 'Audits'])||0}</td>`;
+    cells += `<td class="num">${getCleanVal(r, ['Audit Count', 'Audits', 'Audit'])||0}</td>`;
     body.appendChild(el('tr',{}, cells));
   });
 }
@@ -857,32 +880,38 @@ function renderAdherencePage(){
   const rows = agentWiseOrt();
   
   const box = document.getElementById('kpiAdherence'); box.innerHTML='';
-  const adherenceVals = rows.map(r => normPct(getCleanVal(r, ['Adherence%', 'Adherence']))).filter(v=>v!==null);
+  const adherenceVals = rows.map(r => normPct(getCleanVal(r, ['Adherence%', 'Adherence', 'Adherence %', 'Sch Adherence']))).filter(v=>v!==null);
   const avgAdherence = adherenceVals.length ? adherenceVals.reduce((a,b)=>a+b,0)/adherenceVals.length : 0;
-  const overBreakAgents = rows.filter(r=>{ const v=getCleanVal(r, ['Extra Break', 'Over Break']); return v && !v.toLowerCase().startsWith('no'); }).length;
-  const lagAgents = rows.filter(r=>{ const v=getCleanVal(r, ['Lag Time', 'Lag Hour']); return v && !v.toLowerCase().startsWith('no'); }).length;
-  const totalLagHours = rows.reduce((s,r)=>s+parseDurationHours(getCleanVal(r, ['Lag Time', 'Lag Hour'])),0);
+  
+  const overBreakKeys = ['Over Break', 'Extra Break', 'Break Over', 'OverBreak', 'Excess Break', 'Break Excess', 'Break Exceed', 'Aux Over'];
+  const lagKeys = ['Lag Hour', 'Lag Time', 'Lag Hours', 'LagHours', 'LagTime', 'Lag'];
+
+  const overBreakAgents = rows.filter(r => parseDurationHours(getCleanVal(r, overBreakKeys)) > 0).length;
+  const lagAgents = rows.filter(r => parseDurationHours(getCleanVal(r, lagKeys)) > 0).length;
+  const totalLagHours = rows.reduce((s,r) => s + parseDurationHours(getCleanVal(r, lagKeys)), 0);
 
   kpiCard(box, 'Aligned Avg Adherence', pct(avgAdherence), avgAdherence>=0.9?'good':'warn', '◷');
   kpiCard(box, 'Agents with Over Break', overBreakAgents, overBreakAgents>0?'warn':'good', '⚠', `of ${rows.length} aligned agents`);
   kpiCard(box, 'Agents with Lag', lagAgents, lagAgents>0?'warn':'good', '⏱', `of ${rows.length} aligned agents`);
-  kpiCard(box, 'Total Lag Hours', totalLagHours.toFixed(1)+'h', 'bad', '⏳');
+  kpiCard(box, 'Total Lag Hours', totalLagHours.toFixed(1)+'h', totalLagHours>0?'bad':'good', '⏳');
 
   const tbody = document.getElementById('adherenceTable'); tbody.innerHTML='';
   if(rows.length===0){
     tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No aligned agent data found.</td>`));
     return;
   }
+  
   [...rows].sort((a,b)=>(normPct(getCleanVal(a,['Adherence%','Adherence']))??1)-(normPct(getCleanVal(b,['Adherence%','Adherence']))??1)).forEach(r=>{
-    const adh = normPct(getCleanVal(r, ['Adherence%', 'Adherence']));
-    const overBreak = parseDurationHours(getCleanVal(r, ['Extra Break', 'Over Break']));
-    const lag = parseDurationHours(getCleanVal(r, ['Lag Time', 'Lag Hour']));
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent']);
+    const adh = normPct(getCleanVal(r, ['Adherence%', 'Adherence', 'Adherence %', 'Sch Adherence']));
+    const overBreak = parseDurationHours(getCleanVal(r, overBreakKeys));
+    const lag = parseDurationHours(getCleanVal(r, lagKeys));
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID', 'VDI']);
+    
     tbody.appendChild(el('tr',{}, `
       <td>${name}</td>
       <td class="num ${adh!==null && adh<0.85?'cell-red':''}">${adh!==null?pct(adh):'—'}</td>
-      <td class="num">${overBreak>0?fmtHoursMin(overBreak):'—'}</td>
-      <td class="num">${lag>0?fmtHoursMin(lag):'—'}</td>
+      <td class="num ${overBreak>0?'cell-red':''}">${overBreak>0?fmtHoursMin(overBreak):'—'}</td>
+      <td class="num ${lag>0?'cell-red':''}">${lag>0?fmtHoursMin(lag):'—'}</td>
     `));
   });
 }
@@ -892,12 +921,12 @@ function renderAhtCfsPage(){
   const rows = agentWiseOrt();
   
   const box = document.getElementById('kpiAhtCfs'); box.innerHTML='';
-  const ahtVals = rows.map(r=>numOf(getCleanVal(r, ['AHT']))).filter(v=>v>0);
+  const ahtVals = rows.map(r=>numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec', 'Average Handle Time']))).filter(v=>v>0);
   const avgAht = ahtVals.length ? ahtVals.reduce((a,b)=>a+b,0)/ahtVals.length : 0;
-  const cfsVals = rows.map(r=>normPct(getCleanVal(r, ['CFS%', 'CFS']))).filter(v=>v!==null);
+  const cfsVals = rows.map(r=>normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %', 'Customer Satisfaction']))).filter(v=>v!==null);
   const avgCfs = cfsVals.length ? cfsVals.reduce((a,b)=>a+b,0)/cfsVals.length : 0;
-  const ahtMeeting = rows.filter(r=>{ const v=numOf(getCleanVal(r, ['AHT'])); return v>0 && v<=AHT_TARGET; }).length;
-  const cfsMeeting = rows.filter(r=>{ const v=normPct(getCleanVal(r, ['CFS%', 'CFS'])); return v!==null && v>=CFS_TARGET; }).length;
+  const ahtMeeting = rows.filter(r=>{ const v=numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec'])); return v>0 && v<=AHT_TARGET; }).length;
+  const cfsMeeting = rows.filter(r=>{ const v=normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %'])); return v!==null && v>=CFS_TARGET; }).length;
 
   kpiCard(box, 'Aligned Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
   kpiCard(box, 'AHT Target Met', `${ahtMeeting}/${rows.length}`, ahtMeeting===rows.length?'good':'warn', '✓');
@@ -910,9 +939,9 @@ function renderAhtCfsPage(){
     return;
   }
   rows.forEach(r=>{
-    const aht = numOf(getCleanVal(r, ['AHT']));
-    const cfs = normPct(getCleanVal(r, ['CFS%', 'CFS']));
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent']);
+    const aht = numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec']));
+    const cfs = normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %']));
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID', 'VDI']);
     const ahtMet = aht>0 && aht<=AHT_TARGET;
     const ahtExcess = ahtMet ? 0 : aht-AHT_TARGET;
     const cfsMet = cfs!==null && cfs>=CFS_TARGET;
@@ -937,7 +966,7 @@ function renderAuditLog(){
   let shown=0;
   for(const r of sorted){
     if(shown>=200) break;
-    const agentName = getCleanVal(r, ['Agent Name', 'Name', 'Agent']);
+    const agentName = getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'VDI ID']);
     const qaName = getCleanVal(r, ['QA', 'Evaluator']);
     const hay = `${agentName} ${qaName}`.toLowerCase();
     if(search && !hay.includes(search)) continue;
@@ -962,7 +991,12 @@ function exportCSV(){
     filename='agent_performance';
   } else if(CURRENT_PAGE==='adherence'){
     cols=['Agent','Adherence%','Over Break','Lag Hour'];
-    rowsData = agentWiseOrt().map(r=>[getCleanVal(r, ['Name', 'Agent Name']), normPct(getCleanVal(r, ['Adherence%', 'Adherence']))!==null?pct(normPct(getCleanVal(r, ['Adherence%', 'Adherence']))):'', getCleanVal(r, ['Extra Break']), getCleanVal(r, ['Lag Time'])]);
+    rowsData = agentWiseOrt().map(r=>[
+      getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID']), 
+      normPct(getCleanVal(r, ['Adherence%', 'Adherence']))!==null?pct(normPct(getCleanVal(r, ['Adherence%', 'Adherence']))):'', 
+      getCleanVal(r, ['Over Break', 'Extra Break']), 
+      getCleanVal(r, ['Lag Hour', 'Lag Time'])
+    ]);
     filename='adherence_break';
   } else if(CURRENT_PAGE==='ahtcfs'){
     cols=['Agent','AHT','CFS%'];
@@ -980,7 +1014,7 @@ function exportCSV(){
   URL.revokeObjectURL(url);
 }
 
-// ---------- boot ----------
+// ---------- BOOT ----------
 loadData();
 setInterval(()=>loadData(false), REFRESH_INTERVAL_MS);
 </script>
