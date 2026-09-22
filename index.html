@@ -351,7 +351,7 @@
         <div class="grid-3" id="empathyParamCards" style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;"></div>
       </section>
       <section>
-        <div class="section-head"><h2>Agent × Parameter Matrix</h2><span class="hint">cells below 87.5% highlighted red</span></div>
+        <div class="section-head"><h2>VDI ID &amp; Agent Matrix</h2><span class="hint">cells below 87.5% highlighted red</span></div>
         <div class="table-wrap">
           <table>
             <thead><tr id="empathyMatrixHead"></tr></thead>
@@ -438,29 +438,53 @@ function allAudits() { return DATA.agentAudits || []; }
 function allOrt() { return DATA.ort || []; }
 function rawEmpathy() { return DATA.empathyWise || []; }
 
-// VDI ID ALIGNMENT LOOKUP FOR EMPATHY ANALYSIS
-function getAlignedVdiSet() {
-  const set = new Set();
+// ALIGNMENT MAP: VDI ID -> AGENT NAME LOOKUP
+function getAlignmentMap() {
+  const map = new Map();
   const alignmentList = DATA.Alignment || [];
   alignmentList.forEach(r => {
-    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI']);
-    if (vdi) set.add(vdi.toLowerCase());
+    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI', 'VDIID']);
+    const name = getCleanVal(r, ['Agent Name', 'Name', 'Employee Name', 'Emp Name', 'Agent']);
+    if (vdi) {
+      map.set(vdi.toLowerCase().trim(), name || 'Unknown');
+    }
   });
-  return set;
+  return map;
 }
 
+// GET ALIGNED EMPATHY DATA WITH LOOKUP
 function getAlignedEmpathyData() {
-  const alignedVdis = getAlignedVdiSet();
+  const alignMap = getAlignmentMap();
   const empRows = rawEmpathy();
-  
-  // If no Alignment dataset is available, return raw EmpathyWise data
-  if (alignedVdis.size === 0) return empRows;
+  const result = [];
 
-  // Filter EmpathyWise sheet data matching VDI ID in Alignment
-  return empRows.filter(r => {
-    const empVdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI']);
-    return empVdi && alignedVdis.has(empVdi.toLowerCase());
+  empRows.forEach(r => {
+    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI', 'VDIID']);
+    const cleanVdi = vdi.toLowerCase().trim();
+
+    if (alignMap.size > 0) {
+      // Look up in Alignment sheet
+      if (cleanVdi && alignMap.has(cleanVdi)) {
+        const nameFromAlign = alignMap.get(cleanVdi);
+        const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
+        result.push({
+          ...r,
+          _vdiId: vdi,
+          _agentName: nameFromAlign || nameFromEmp || 'Unknown'
+        });
+      }
+    } else {
+      // Fallback if Alignment is empty/not passed yet
+      const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
+      result.push({
+        ...r,
+        _vdiId: vdi || '—',
+        _agentName: nameFromEmp || 'Unknown'
+      });
+    }
   });
+
+  return result;
 }
 
 // ---------- HELPERS ----------
@@ -479,20 +503,17 @@ function normPct(v){
   return n > 1 ? n / 100 : n;
 }
 
-// ROBUST DURATION & TIME PARSER FOR EXTRA BREAK / LAG TIME
 function parseDurationHours(v) {
   if (v === null || v === undefined) return 0;
   let s = String(v).trim();
   if (!s || s === '0' || s === '00:00:00' || s === '00:00' || s.toLowerCase().startsWith('no') || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return 0;
   
-  // Decimal Day Fraction
   let num = Number(s);
   if (!isNaN(num)) {
     if (num > 0 && num <= 1.0) return num * 24;
     return num; 
   }
 
-  // Text duration formats like "15m", "15 mins"
   if (s.toLowerCase().includes('m') && !s.includes(':')) {
     let mins = parseFloat(s);
     return isNaN(mins) ? 0 : mins / 60;
@@ -502,7 +523,6 @@ function parseDurationHours(v) {
     return isNaN(hrs) ? 0 : hrs;
   }
 
-  // Clock format HH:MM:SS or MM:SS
   if (s.includes(':')) {
     let parts = s.split(':').map(Number);
     if (parts.some(isNaN)) return 0;
@@ -566,7 +586,7 @@ function toggleSidebar(){
 const PAGE_META = {
   overview:   {title:'Dashboard Overview', sub:'Team performance summary'},
   agent:      {title:'Agent Performance', sub:'From IB Agent Wise — audits, pass/fail, empathy vs 88% target'},
-  empathy:    {title:'Empathy Analysis', sub:'From Empathy Wise — aligned using VDI ID from Alignment sheet'},
+  empathy:    {title:'Empathy Analysis', sub:'From Empathy Wise — aligned using VDI ID & lookup from Alignment sheet'},
   adherence:  {title:'Adherence & Break', sub:'From ORT — adherence, extra break, lag time'},
   ahtcfs:     {title:'AHT & CFS', sub:'From ORT — AHT target 170s, CFS target 90%'},
   log:        {title:'Audit Log', sub:'Raw call-level audit records'}
@@ -666,10 +686,9 @@ function renderOverview(){
   kpiCard(box, 'Empathy Pass %', pct(empPct), empPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', empPct>=EMPATHY_AGENT_TARGET?'Meets 88% target':'Below 88% target', empPct>=EMPATHY_AGENT_TARGET?'good':'bad');
   kpiCard(box, 'Total Agents', agentAggregates().length, 'purple', '☺');
 
-  // Leaderboards
   const ortAggs = ortAgentAggregates();
 
-  // 1. Top 05 CFS
+  // Top 05 CFS
   const topCfsBody = document.getElementById('ovTopCfs'); topCfsBody.innerHTML='';
   const topCfs = [...ortAggs].filter(a=>a.cfs!==null).sort((a,b)=>b.cfs-a.cfs).slice(0,5);
   topCfs.forEach((a,i)=>{
@@ -677,7 +696,7 @@ function renderOverview(){
   });
   if(topCfs.length===0) topCfsBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No CFS data.</td>`));
 
-  // 2. Top 05 AHT (Lowest)
+  // Top 05 AHT (Lowest)
   const topAhtBody = document.getElementById('ovTopAht'); topAhtBody.innerHTML='';
   const topAht = [...ortAggs].filter(a=>a.aht>0).sort((a,b)=>a.aht-b.aht).slice(0,5);
   topAht.forEach((a,i)=>{
@@ -685,7 +704,7 @@ function renderOverview(){
   });
   if(topAht.length===0) topAhtBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No AHT data.</td>`));
 
-  // 3. Top 05 Empathy Holder
+  // Top 05 Empathy Holder
   const topEmpBody = document.getElementById('ovTopEmpathy'); topEmpBody.innerHTML='';
   const allAggs = agentAggregates();
   const topEmp = [...allAggs].filter(a=>a.empPct!==null).sort((a,b)=>b.empPct-a.empPct).slice(0,5);
@@ -757,7 +776,7 @@ function renderAgentPage(){
   });
 }
 
-// ============ EMPATHY ANALYSIS PAGE (ALIGNMENT LOOKUP VIA VDI ID) ============
+// ============ EMPATHY ANALYSIS PAGE ============
 const EMPATHY_PARAMS = [
   'Warm Greetings',
   'Acknowledgment & Understanding',
@@ -784,7 +803,7 @@ function getEmpathyVal(row, param) {
     'Speech Clarity / Clarity of Communication': ['clarity', 'speech', 'communicat'],
     'Proper Listening': ['listen'],
     'Personalization': ['personal'],
-    'Time / Hold Management': ['hold', 'time'],
+    'Time / Hold Management': ['hold', 'time', 'management'],
     'Emotional Tone with Courtesy': ['tone', 'courtesy', 'emotion'],
     'Closing Courtesy': ['close', 'closing']
   };
@@ -803,7 +822,6 @@ function getEmpathyVal(row, param) {
 }
 
 function renderEmpathyPage(){
-  // Extract aligned data strictly from EmpathyWise based on Alignment VDI ID lookup
   const rows = getAlignedEmpathyData();
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
 
@@ -826,22 +844,21 @@ function renderEmpathyPage(){
     `));
   });
 
+  // Table Head: Explicit VDI ID Column + Agent Name Column
   const head = document.getElementById('empathyMatrixHead');
-  head.innerHTML = '<th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
+  head.innerHTML = '<th>VDI ID</th><th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
   if(rows.length===0){ 
-    body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No empathy wise records found matching Alignment VDI IDs.</td>`)); 
+    body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No empathy records found matching Alignment VDI IDs.</td>`)); 
     return; 
   }
 
   rows.forEach(r=>{
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
-    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID']);
-    const displayName = name ? `${name} (${vdi})` : vdi;
-    if(!displayName) return;
+    const vdi = r._vdiId || getCleanVal(r, ['VDI ID', 'VDI', 'Emp ID', 'ID']) || '—';
+    const name = r._agentName || getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'Emp Name']) || '—';
     
-    let cells = `<td>${displayName}</td>`;
+    let cells = `<td class="num">${vdi}</td><td>${name}</td>`;
     EMPATHY_PARAMS.forEach(p=>{
       const val = getEmpathyVal(r, p);
       if(val===null){ cells += `<td class="num">—</td>`; }
@@ -983,9 +1000,10 @@ function exportCSV(){
     rowsData = agentAggregates().map(a=>[a.agent,a.total,a.pass,a.fail,pct(a.failPct),a.ep,a.ef,a.empPct!==null?pct(a.empPct):'']);
     filename='agent_performance';
   } else if(CURRENT_PAGE==='empathy'){
-    cols=['Agent Name', ...EMPATHY_PARAMS, 'Audits'];
+    cols=['VDI ID', 'Agent Name', ...EMPATHY_PARAMS, 'Audits'];
     rowsData = (getAlignedEmpathyData()).map(r=>[
-      getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID']),
+      r._vdiId || getCleanVal(r, ['VDI ID', 'VDI']),
+      r._agentName || getCleanVal(r, ['Name', 'Agent Name']),
       ...EMPATHY_PARAMS.map(p => { const v = getEmpathyVal(r, p); return v !== null ? pct(v) : ''; }),
       getCleanVal(r, ['Audit Count', 'Audits'])
     ]);
