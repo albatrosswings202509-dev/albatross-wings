@@ -436,6 +436,31 @@ const CFS_TARGET = 0.90;
 
 let DATA = { agentAudits: [], empathyWise: [], ort: [], alignment: [] };
 
+// ---------- alignment-based agent visibility ----------
+// Only agents present in the Alignment sheet are shown in agent-wise views.
+// Team/overview data remains untouched, so team totals continue to include all records.
+function alignmentAgentKeys(){
+  const keys = new Set();
+  (DATA.alignment || []).forEach(r => {
+    const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? '').trim().toLowerCase();
+    const name = String(r['Name'] ?? r['Agent Name'] ?? '').trim().toLowerCase();
+    if(id) keys.add('id:'+id);
+    if(name) keys.add('name:'+name);
+  });
+  return keys;
+}
+function isAlignedRecord(r){
+  const keys = alignmentAgentKeys();
+  if(keys.size===0) return true; // preserve current behavior if Alignment is unavailable/empty
+  const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? '').trim().toLowerCase();
+  const name = String(r['Name'] ?? r['Agent Name'] ?? '').trim().toLowerCase();
+  return (id && keys.has('id:'+id)) || (name && keys.has('name:'+name));
+}
+function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
+function agentWiseAudits(){ return agentWiseRows(DATA.agentAudits); }
+function agentWiseOrt(){ return agentWiseRows(DATA.ort); }
+function agentWiseEmpathy(){ return agentWiseRows(DATA.empathyWise); }
+
 // ---------- helpers ----------
 const numOf = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const pct = (n) => (n*100).toFixed(1) + '%';
@@ -574,7 +599,7 @@ function kpiCard(container, label, value, iconClass, icon, sub='', subClass=''){
 
 // ============ OVERVIEW ============
 function agentAggregates(){
-  const byAgent = groupBy(DATA.agentAudits, r=>r['Agent Name']||'Unknown');
+  const byAgent = groupBy(agentWiseAudits(), r=>r['Agent Name']||'Unknown');
   const out = [];
   byAgent.forEach((rows, agent) => {
     if(!agent || agent==='Unknown') return;
@@ -695,7 +720,7 @@ function renderOverview(){
 function populateAgentSelect(){
   const sel = document.getElementById('agentSelect');
   const current = sel.value;
-  const names = [...new Set(DATA.agentAudits.map(r=>r['Agent Name']).filter(Boolean))].sort();
+  const names = [...new Set(agentWiseAudits().map(r=>r['Agent Name']).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">All Agents</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
   if(names.includes(current)) sel.value = current;
 }
@@ -877,7 +902,7 @@ function renderAhtCfsPage(){
 function renderAuditLog(){
   const search = (document.getElementById('logSearch').value||'').toLowerCase();
   const tbody = document.getElementById('auditLogTable'); tbody.innerHTML='';
-  const sorted = [...DATA.agentAudits].sort((a,b)=>{
+  const sorted = [...agentWiseAudits()].sort((a,b)=>{
     const da=(a['Eval Date']||''), db=(b['Eval Date']||'');
     return db.localeCompare(da);
   });
@@ -907,15 +932,15 @@ function exportCSV(){
     filename='agent_performance';
   } else if(CURRENT_PAGE==='adherence'){
     cols=['Agent','Adherence%','Over Break','Lag Hour'];
-    rowsData = DATA.ort.map(r=>[r['Name'], normPct(r['Adherence%'])!==null?pct(normPct(r['Adherence%'])):'', r['Extra Break'], r['Lag Time']]);
+    rowsData = agentWiseOrt().map(r=>[r['Name'], normPct(r['Adherence%'])!==null?pct(normPct(r['Adherence%'])):'', r['Extra Break'], r['Lag Time']]);
     filename='adherence_break';
   } else if(CURRENT_PAGE==='ahtcfs'){
     cols=['Agent','AHT','CFS%'];
-    rowsData = DATA.ort.map(r=>[r['Name'], r['AHT'], r['CFS%']]);
+    rowsData = agentWiseOrt().map(r=>[r['Name'], r['AHT'], r['CFS%']]);
     filename='aht_cfs';
   } else {
     cols=['Eval Date','Agent Name','QA','Skill','Score','Result','Critical','RTC'];
-    rowsData = DATA.agentAudits.map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['Evaluation Score'],r['Pass or Fail'],r['Critical Error'],r['RTC']]);
+    rowsData = agentWiseAudits().map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['Evaluation Score'],r['Pass or Fail'],r['Critical Error'],r['RTC']]);
     filename='audit_log';
   }
   const lines = [cols.join(',')].concat(rowsData.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')));
