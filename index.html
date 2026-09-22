@@ -89,7 +89,6 @@
     padding:16px 20px; font-size:11px; color:#6d768c;
     border-top:1px solid var(--navy-line);
     white-space:nowrap;
-    text-align:center;
   }
 
   /* Floating reopen button, shown only while sidebar is collapsed */
@@ -121,11 +120,10 @@
     display:flex; align-items:center; justify-content:space-between;
     flex-wrap:wrap; gap:12px;
     position:sticky; top:0; z-index:40;
-    text-align:center;
   }
   .topbar h1{font-size:18px; font-weight:700; margin:0;}
   .topbar .page-sub{font-size:12px; color:var(--muted); margin-top:2px;}
-  .status-cluster{display:flex; align-items:center; gap:12px; font-size:12px; color:var(--muted); flex-wrap:wrap; justify-content:center;}
+  .status-cluster{display:flex; align-items:center; gap:12px; font-size:12px; color:var(--muted); flex-wrap:wrap;}
   .live-chip{
     display:flex; align-items:center; gap:6px; background:var(--good-dim); color:var(--good);
     padding:6px 12px; border-radius:20px; font-weight:600; font-size:11.5px;
@@ -147,39 +145,38 @@
 
   .setup-banner{
     background:#fdf3e0; border-bottom:1px solid #ecd8a0; color:#7a5a0a;
-    padding:11px 28px; font-size:12.5px; display:none; text-align:center;
+    padding:11px 28px; font-size:12.5px; display:none;
   }
   .setup-banner.show{display:block;}
   .setup-banner code{background:#fff; border:1px solid #ecd8a0; padding:1px 5px; border-radius:3px; font-family:var(--mono);}
 
-  main{padding:24px 28px 60px; max-width:1500px; margin:0 auto; width:100%; text-align:center;}
+  main{padding:24px 28px 60px; max-width:1500px; margin:0 auto; width:100%;}
   .page{display:none;}
   .page.active{display:block; animation:fadein 0.3s ease;}
   @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
 
-  section{margin-bottom:28px; text-align:center;}
-  .section-head{display:flex; align-items:center; justify-content:center; margin-bottom:14px; flex-wrap:wrap; gap:8px; text-align:center;}
-  .section-head h2{font-size:15.5px; font-weight:700; margin:0; text-align:center;}
+  section{margin-bottom:28px;}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;}
+  .section-head h2{font-size:15.5px; font-weight:700; margin:0;}
   .section-head .hint{font-size:11.5px; color:var(--muted-dim); font-family:var(--mono);}
 
-  /* Filters - LEFT ALIGNED */
-  .filterbar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px; text-align:left !important; justify-content:flex-start !important;}
-  .filterbar .fgroup{display:flex; flex-direction:column; gap:5px; text-align:left !important; align-items:flex-start !important;}
-  .filterbar label{font-size:10.5px; color:var(--muted-dim); text-align:left !important;}
+  /* Filters */
+  .filterbar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px;}
+  .filterbar .fgroup{display:flex; flex-direction:column; gap:5px;}
+  .filterbar label{font-size:10.5px; color:var(--muted-dim);}
   .filterbar select, .filterbar input[type=text]{
     background:#fff; color:var(--ink); border:1px solid var(--line);
-    border-radius:7px; padding:8px 11px; font-family:var(--sans); font-size:12.5px; min-width:150px; text-align:left !important;
+    border-radius:7px; padding:8px 11px; font-family:var(--sans); font-size:12.5px; min-width:150px;
   }
   .filterbar select:focus, .filterbar input:focus{outline:1px solid var(--blue);}
 
-  /* KPI cards - CENTERED */
-  .kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px; justify-content:center;}
+  /* KPI cards */
+  .kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px;}
   .kpi-card{
     background:var(--card); border:1px solid var(--line); border-radius:12px;
     padding:16px 18px; display:flex; flex-direction:column; gap:4px;
-    align-items:center; text-align:center; justify-content:center;
   }
-  .kpi-card .kpi-top{display:flex; align-items:center; gap:10px; margin-bottom:6px; justify-content:center;}
+  .kpi-card .kpi-top{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
   .kpi-icon{
     width:32px; height:32px; border-radius:9px; flex-shrink:0;
     display:flex; align-items:center; justify-content:center; font-size:15px;
@@ -189,53 +186,53 @@
   .kpi-icon.bad{background:var(--bad-dim); color:var(--bad);}
   .kpi-icon.warn{background:var(--warn-dim); color:var(--warn);}
   .kpi-icon.purple{background:#efe9fc; color:var(--purple);}
-  .kpi-card .kpi-label{font-size:12px; color:var(--muted); font-weight:600; text-align:center;}
-  .kpi-card .kpi-num{font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; text-align:center;}
-  .kpi-card .kpi-sub{font-size:11px; color:var(--muted-dim); text-align:center;}
+  .kpi-card .kpi-label{font-size:12px; color:var(--muted); font-weight:600;}
+  .kpi-card .kpi-num{font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums;}
+  .kpi-card .kpi-sub{font-size:11px; color:var(--muted-dim);}
   .kpi-card .kpi-sub.good{color:var(--good);}
   .kpi-card .kpi-sub.bad{color:var(--bad);}
 
   /* Panels */
-  .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; text-align:center;}
-  .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px; text-align:center;}
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px;}
+  .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px;}
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
   @media (max-width:960px){.grid-2, .grid-3{grid-template-columns:1fr;}}
 
   /* Bars */
-  .bar-row{display:flex; align-items:center; gap:10px; padding:6px 0; justify-content:center;}
-  .bar-label{width:150px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink); text-align:center;}
+  .bar-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
+  .bar-label{width:150px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink);}
   .bar-track{flex:1; background:#eef1f7; height:14px; border-radius:4px; overflow:hidden;}
   .bar-fill{height:100%; border-radius:4px;}
   .bar-fill.blue{background:var(--blue);}
   .bar-fill.good{background:var(--good);}
   .bar-fill.bad{background:var(--bad);}
   .bar-fill.warn{background:var(--warn);}
-  .bar-val{width:90px; text-align:center; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
+  .bar-val{width:90px; text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
 
   /* Empathy parameter cards */
   .param-card{
     border-radius:12px; padding:14px 16px; border:1px solid var(--line);
-    background:var(--good-dim); text-align:center;
+    background:var(--good-dim);
   }
   .param-card.red{background:var(--bad-dim); border-color:#f3c7c1;}
-  .param-card .pname{font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px; text-align:center;}
-  .param-card .pval{font-size:22px; font-weight:800; text-align:center;}
+  .param-card .pname{font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px;}
+  .param-card .pval{font-size:22px; font-weight:800;}
   .param-card.red .pval{color:var(--bad);}
   .param-card:not(.red) .pval{color:var(--good);}
-  .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px; text-align:center;}
+  .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px;}
 
-  /* Tables - ALL CENTERED */
-  table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px; text-align:center;}
+  /* Tables */
+  table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px;}
   thead th{
-    text-align:center; font-size:10.5px; color:var(--muted); font-weight:700;
+    text-align:left; font-size:10.5px; color:var(--muted); font-weight:700;
     padding:10px 11px; border-bottom:1.5px solid var(--line); position:sticky; top:0; background:var(--card);
     text-transform:uppercase; letter-spacing:0.03em;
   }
-  tbody td{padding:9px 11px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; text-align:center;}
+  tbody td{padding:9px 11px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums;}
   tbody tr:hover{background:#fafbfd;}
   .table-wrap{max-height:460px; overflow-y:auto; border:1px solid var(--line); border-radius:12px;}
-  .num{text-align:center; font-family:var(--mono);}
+  .num{text-align:right; font-family:var(--mono);}
   .pill{display:inline-block; padding:2px 9px; border-radius:5px; font-size:10.5px; font-weight:700;}
   .pill.pass, .pill.good{background:var(--good-dim); color:var(--good);}
   .pill.fail, .pill.bad{background:var(--bad-dim); color:var(--bad);}
@@ -250,13 +247,13 @@
   .spotlight{
     background:linear-gradient(135deg, #16243f, #24345f);
     border-radius:14px; padding:22px 26px; color:#fff; margin-bottom:20px;
-    display:flex; align-items:center; justify-content:space-around; flex-wrap:wrap; gap:16px; text-align:center;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
   }
-  .spotlight .sp-name{font-size:19px; font-weight:800; text-align:center;}
-  .spotlight .sp-sub{font-size:12px; color:#aab2c5; margin-top:2px; text-align:center;}
-  .spotlight-metrics{display:flex; gap:28px; flex-wrap:wrap; justify-content:center;}
-  .spotlight-metrics .sm-val{font-size:22px; font-weight:800; font-family:var(--mono); text-align:center;}
-  .spotlight-metrics .sm-label{font-size:10.5px; color:#aab2c5; margin-top:2px; text-align:center;}
+  .spotlight .sp-name{font-size:19px; font-weight:800;}
+  .spotlight .sp-sub{font-size:12px; color:#aab2c5; margin-top:2px;}
+  .spotlight-metrics{display:flex; gap:28px; flex-wrap:wrap;}
+  .spotlight-metrics .sm-val{font-size:22px; font-weight:800; font-family:var(--mono);}
+  .spotlight-metrics .sm-label{font-size:10.5px; color:#aab2c5; margin-top:2px;}
 </style>
 </head>
 <body>
@@ -318,24 +315,19 @@
         </div>
       </section>
       <section>
-        <div class="section-head"><h2>Agent Leaderboard</h2></div>
-
-        <!-- NEW TOP 05 LEADERBOARDS (CFS, AHT, EMPATHY) -->
-        <div class="grid-3" style="margin-bottom:18px;">
-          <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top 05 CFS</h2></div>
-            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">CFS %</th></tr></thead><tbody id="ovTopCFS"></tbody></table></div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">TOP FAILURE REASONS (from Audit Party parameter fails)</div>
+            <div id="ovFailReasons"></div>
           </div>
-          <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top 05 AHT (Lowest)</h2></div>
-            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">AHT (s)</th></tr></thead><tbody id="ovTopAHT"></tbody></table></div>
-          </div>
-          <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top 05 Empathy</h2></div>
-            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">Empathy %</th></tr></thead><tbody id="ovTopEmpathy"></tbody></table></div>
+          <div class="panel">
+            <div class="panel-title">EMPATHY VS AUDIT PASS RATE BY AGENT</div>
+            <div id="ovEmpathyCompare"></div>
           </div>
         </div>
-
+      </section>
+      <section>
+        <div class="section-head"><h2>Agent Leaderboard</h2></div>
         <div class="grid-2">
           <div>
             <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top Scorers</h2></div>
@@ -423,7 +415,7 @@
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Eval date</th><th>Agent</th><th>QA</th><th>Skill</th><th>ANI</th><th>Topic</th><th>Result</th><th>Critical</th><th>RTC</th>
+            <th>Eval date</th><th>Agent</th><th>QA</th><th>Skill</th><th class="num">Score</th><th>Result</th><th>Critical</th><th>RTC</th>
           </tr></thead>
           <tbody id="auditLogTable"></tbody>
         </table>
@@ -435,7 +427,7 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycby7J_BIr7FaZu1bWzNp3W2kg0FwmVNS760jh8HalHbVMxqtlu-q1almywmVpBTs4nzr/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwvq8rkhoDud264sm2cXD8jggqIw6KkHEti6wXCqykaUpe-lrpz7wblAhnzU8DC6nXA/exec";
 const REFRESH_INTERVAL_MS = 30000;
 const EMPATHY_AGENT_TARGET = 0.88;   // Agent Performance page target
 const EMPATHY_PARAM_TARGET = 0.875;  // Empathy Analysis page red-flag threshold
@@ -445,6 +437,8 @@ const CFS_TARGET = 0.90;
 let DATA = { agentAudits: [], empathyWise: [], ort: [], alignment: [] };
 
 // ---------- alignment-based agent visibility ----------
+// Only agents present in the Alignment sheet are shown in agent-wise views.
+// Team/overview data remains untouched, so team totals continue to include all records.
 function alignmentAgentKeys(){
   const keys = new Set();
   (DATA.alignment || []).forEach(r => {
@@ -457,7 +451,7 @@ function alignmentAgentKeys(){
 }
 function isAlignedRecord(r){
   const keys = alignmentAgentKeys();
-  if(keys.size===0) return true;
+  if(keys.size===0) return true; // preserve current behavior if Alignment is unavailable/empty
   const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? '').trim().toLowerCase();
   const name = String(r['Name'] ?? r['Agent Name'] ?? '').trim().toLowerCase();
   return (id && keys.has('id:'+id)) || (name && keys.has('name:'+name));
@@ -465,6 +459,7 @@ function isAlignedRecord(r){
 function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
 function agentWiseAudits(){ return agentWiseRows(DATA.agentAudits); }
 function agentWiseOrt(){ return agentWiseRows(DATA.ort); }
+function agentWiseEmpathy(){ return agentWiseRows(DATA.empathyWise); }
 
 // ---------- helpers ----------
 const numOf = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
@@ -473,15 +468,16 @@ const isPass = (v) => String(v||'').trim().toLowerCase() === 'pass';
 function el(tag, attrs={}, html=''){ const e=document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); e.innerHTML=html; return e; }
 function groupBy(arr, keyFn){ const m=new Map(); arr.forEach(r=>{const k=keyFn(r); if(!m.has(k)) m.set(k,[]); m.get(k).push(r);}); return m; }
 
+// normalize a value that might be "87.50%", 0.875, or "0.875"
 function normPct(v){
   if(v === null || v === undefined || v === '') return null;
   if(typeof v === 'string' && v.trim().toUpperCase() === 'NA') return null;
   if(typeof v === 'string' && v.includes('%')) return parseFloat(v.replace('%','')) / 100;
   const n = parseFloat(v);
   if(isNaN(n)) return null;
-  return n;
+  return n; // assume already a 0-1 fraction
 }
-
+// parse "HH:MM:SS" or "No Lag"/"No Extra Break" into decimal hours
 function parseDurationHours(v){
   if(!v || typeof v !== 'string') return 0;
   const s = v.trim();
@@ -547,14 +543,14 @@ function toggleSidebar(){
   document.body.classList.toggle('sidebar-collapsed');
   try{
     localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed') ? '1' : '0');
-  }catch(e){}
+  }catch(e){ /* localStorage unavailable - ignore */ }
 }
 (function initSidebarState(){
   try{
     if(localStorage.getItem('sidebarCollapsed') === '1'){
       document.body.classList.add('sidebar-collapsed');
     }
-  }catch(e){}
+  }catch(e){ /* localStorage unavailable - ignore */ }
 })();
 
 // ---------- page routing ----------
@@ -669,58 +665,49 @@ function renderOverview(){
     siteBox.appendChild(row);
   });
 
+  // fail reasons (from Error Remarks not collected in this sheet's wanted cols, so fall back to Critical/RTC fail causes)
+  const failBox = document.getElementById('ovFailReasons'); failBox.innerHTML='';
+  const critFails = rows.filter(r=>!isPass(r['Critical Error']));
+  const rtcFails = rows.filter(r=>!isPass(r['RTC']));
+  const reasonCounts = [
+    {label:'Critical Error fails', count:critFails.length},
+    {label:'RTC fails', count:rtcFails.length},
+    {label:'Overall Fail (Pass or Fail)', count:failCount}
+  ].filter(r=>r.count>0).sort((a,b)=>b.count-a.count);
+  if(reasonCounts.length===0) failBox.appendChild(el('div',{class:'empty-note'},'No failures in current data.'));
+  const maxReason = Math.max(1,...reasonCounts.map(r=>r.count));
+  reasonCounts.forEach(r=>{
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label', style:'width:220px;'}, r.label));
+    const track = el('div',{class:'bar-track'});
+    track.appendChild(el('div',{class:'bar-fill bad', style:`width:${Math.max(2,(r.count/maxReason)*100)}%`}));
+    row.appendChild(track);
+    row.appendChild(el('div',{class:'bar-val'}, r.count));
+    failBox.appendChild(row);
+  });
+
+  // empathy vs pass rate by agent
+  const aggs = agentAggregates().filter(a=>a.empPct!==null);
+  const cmpBox = document.getElementById('ovEmpathyCompare'); cmpBox.innerHTML='';
+  if(aggs.length===0) cmpBox.appendChild(el('div',{class:'empty-note'},'No data.'));
+  aggs.sort((a,b)=>a.empPct-b.empPct).forEach(a=>{
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label'}, a.agent));
+    const track = el('div',{class:'bar-track'});
+    track.appendChild(el('div',{class:`bar-fill ${a.empPct>=EMPATHY_AGENT_TARGET?'good':'bad'}`, style:`width:${Math.max(2,a.empPct*100)}%`}));
+    row.appendChild(track);
+    row.appendChild(el('div',{class:'bar-val'}, pct(a.empPct)));
+    cmpBox.appendChild(row);
+  });
+
   // leaderboards
   const topScorersBody = document.getElementById('ovTopScorers'); topScorersBody.innerHTML='';
   const attentionBody = document.getElementById('ovAttention'); attentionBody.innerHTML='';
-  const topCfsBody = document.getElementById('ovTopCFS'); topCfsBody.innerHTML='';
-  const topAhtBody = document.getElementById('ovTopAHT'); topAhtBody.innerHTML='';
-  const topEmpathyBody = document.getElementById('ovTopEmpathy'); topEmpathyBody.innerHTML='';
-
   const allAggs = agentAggregates();
-  const ortRows = agentWiseOrt();
-
-  // 1. Top 05 CFS
-  const cfsList = ortRows
-    .map(r => ({ agent: r['Name'], cfs: normPct(r['CFS%']) }))
-    .filter(r => r.agent && r.cfs !== null)
-    .sort((a,b) => b.cfs - a.cfs)
-    .slice(0, 5);
-
-  cfsList.forEach((a, i) => {
-    topCfsBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num cell-good">${pct(a.cfs)}</td>`));
-  });
-  if(topCfsBody.children.length === 0) topCfsBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No data.</td>`));
-
-  // 2. Top 05 AHT (Lowest handling time)
-  const ahtList = ortRows
-    .map(r => ({ agent: r['Name'], aht: numOf(r['AHT']) }))
-    .filter(r => r.agent && r.aht > 0)
-    .sort((a,b) => a.aht - b.aht)
-    .slice(0, 5);
-
-  ahtList.forEach((a, i) => {
-    topAhtBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${a.aht.toFixed(1)}s</td>`));
-  });
-  if(topAhtBody.children.length === 0) topAhtBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No data.</td>`));
-
-  // 3. Top 05 Empathy
-  const empathyList = allAggs
-    .filter(a => a.empPct !== null)
-    .sort((a,b) => b.empPct - a.empPct)
-    .slice(0, 5);
-
-  empathyList.forEach((a, i) => {
-    topEmpathyBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num cell-good">${pct(a.empPct)}</td>`));
-  });
-  if(topEmpathyBody.children.length === 0) topEmpathyBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No data.</td>`));
-
-  // 4. Top Scorers
   [...allAggs].sort((a,b)=>b.avgScore-a.avgScore).slice(0,8).forEach((a,i)=>{
     topScorersBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${a.avgScore.toFixed(1)}</td><td class="num">${a.total}</td>`));
   });
   if(topScorersBody.children.length===0) topScorersBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data.</td>`));
-
-  // 5. Needs Attention
   const belowTarget = allAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).sort((a,b)=>a.empPct-b.empPct);
   belowTarget.slice(0,8).forEach((a,i)=>{
     const shortfall = EMPATHY_AGENT_TARGET - a.empPct;
@@ -743,6 +730,7 @@ function renderAgentPage(){
   const selected = document.getElementById('agentSelect').value;
   const spotlight = document.getElementById('agentSpotlight');
 
+  // KPIs (team-level, always shown)
   const box = document.getElementById('kpiAgent'); box.innerHTML='';
   const totalAudits = aggs.reduce((s,a)=>s+a.total,0);
   const totalFail = aggs.reduce((s,a)=>s+a.fail,0);
@@ -755,6 +743,7 @@ function renderAgentPage(){
   kpiCard(box, 'Team Empathy %', pct(teamEmpPct), teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', teamEmpPct>=EMPATHY_AGENT_TARGET?'Meets target':'Below 88% target', teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad');
   kpiCard(box, 'Below Empathy Target', belowTarget, belowTarget>0?'warn':'good', '⚑', `of ${aggs.length} agents`);
 
+  // spotlight
   if(selected){
     const a = aggs.find(x=>x.agent===selected);
     if(a){
@@ -772,6 +761,7 @@ function renderAgentPage(){
     } else { spotlight.style.display='none'; }
   } else { spotlight.style.display='none'; }
 
+  // table
   const tbody = document.getElementById('agentTable'); tbody.innerHTML='';
   const rowsToShow = selected ? aggs.filter(a=>a.agent===selected) : aggs;
   if(rowsToShow.length===0){ tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No data.</td>`)); return; }
@@ -791,21 +781,21 @@ function renderAgentPage(){
   });
 }
 
-// ============ EMPATHY ANALYSIS PAGE (NO ALIGNMENT) ============
+// ============ EMPATHY ANALYSIS PAGE ============
 const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speech Clarity / Clarity of Communication','Proper Listening','Personalization','Time / Hold Management','Emotional Tone with Courtesy','Closing Courtesy'];
 
 function renderEmpathyPage(){
-  const rows = DATA.empathyWise || [];
+  const rows = DATA.empathyWise;
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
   if(rows.length===0){
     cardBox.appendChild(el('div',{class:'empty-note', style:'grid-column:1/-1;'},
-      `No data returned for the "Empathy wise" tab.`));
+      `No data returned for the "Empathy wise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
   }
 
   EMPATHY_PARAMS.forEach(param => {
     let wsum=0, csum=0;
     rows.forEach(r=>{
-      const audit = numOf(r['Audit Count'] || r['Audits'] || r['Total Audits'] || 1);
+      const audit = numOf(r['Audit Count']);
       const val = normPct(r[param]);
       if(audit>0 && val!==null){ wsum += val*audit; csum += audit; }
     });
@@ -818,21 +808,22 @@ function renderEmpathyPage(){
     `));
   });
 
+  // matrix
+  const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Name']]));
   const head = document.getElementById('empathyMatrixHead');
   head.innerHTML = '<th>Agent</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
   if(rows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No data.</td>`)); return; }
   rows.forEach(r=>{
-    const name = r['Name'] || r['Agent Name'] || r['Agent'] || r['VDI ID'] || '—';
+    const name = nameMap.get(r['VDI ID']) || r['VDI ID'];
     let cells = `<td>${name}</td>`;
     EMPATHY_PARAMS.forEach(p=>{
       const val = normPct(r[p]);
       if(val===null){ cells += `<td class="num">—</td>`; }
       else { cells += `<td class="num ${val<EMPATHY_PARAM_TARGET?'cell-red':''}">${pct(val)}</td>`; }
     });
-    const auditCount = r['Audit Count'] ?? r['Audits'] ?? r['Total Audits'] ?? 0;
-    cells += `<td class="num">${auditCount}</td>`;
+    cells += `<td class="num">${r['Audit Count']||0}</td>`;
     body.appendChild(el('tr',{}, cells));
   });
 }
@@ -854,7 +845,7 @@ function renderAdherencePage(){
 
   const tbody = document.getElementById('adherenceTable'); tbody.innerHTML='';
   if(rows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data returned for the "ORT" tab.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data returned for the "ORT" tab. Check that the tab name matches <code>SHEET_NAMES.ort</code> in AppsScript_Code.gs, and that its header row has columns like "Name", "Adherence%", "Extra Break", "Lag Time".</td>`));
     return;
   }
   [...rows].sort((a,b)=>(normPct(a['Adherence%'])??1)-(normPct(b['Adherence%'])??1)).forEach(r=>{
@@ -888,7 +879,7 @@ function renderAhtCfsPage(){
 
   const tbody = document.getElementById('ahtCfsTable'); tbody.innerHTML='';
   if(rows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No data returned for the "ORT" tab.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No data returned for the "ORT" tab. Check that the tab name matches <code>SHEET_NAMES.ort</code> in AppsScript_Code.gs, and that its header row has columns like "Name", "AHT", "CFS%".</td>`));
     return;
   }
   rows.forEach(r=>{
@@ -921,21 +912,18 @@ function renderAuditLog(){
     const hay = `${r['Agent Name']} ${r['QA']}`.toLowerCase();
     if(search && !hay.includes(search)) continue;
     const pass = isPass(r['Pass or Fail']);
-    const aniVal = r['ANI'] || r['ani'] || r['ANI Number'] || '';
-    const topicVal = r['Topic'] || r['topic'] || '';
     tbody.appendChild(el('tr',{}, `
       <td>${r['Eval Date']||''}</td><td>${r['Agent Name']||''}</td><td>${r['QA']||''}</td><td>${r['Skill']||''}</td>
-      <td>${aniVal}</td>
-      <td>${topicVal}</td>
+      <td class="num">${r['Evaluation Score']||''}</td>
       <td><span class="pill ${pass?'pass':'fail'}">${r['Pass or Fail']||''}</span></td>
       <td>${r['Critical Error']||''}</td><td>${r['RTC']||''}</td>
     `));
     shown++;
   }
-  if(shown===0) tbody.appendChild(el('tr',{}, `<td colspan="9" class="empty-note">No matching audits.</td>`));
+  if(shown===0) tbody.appendChild(el('tr',{}, `<td colspan="8" class="empty-note">No matching audits.</td>`));
 }
 
-// ============ CSV EXPORT ============
+// ============ CSV export (exports current page's primary table) ============
 function exportCSV(){
   let cols, rowsData, filename;
   if(CURRENT_PAGE==='agent'){
@@ -951,8 +939,8 @@ function exportCSV(){
     rowsData = agentWiseOrt().map(r=>[r['Name'], r['AHT'], r['CFS%']]);
     filename='aht_cfs';
   } else {
-    cols=['Eval Date','Agent Name','QA','Skill','ANI','Topic','Result','Critical','RTC'];
-    rowsData = agentWiseAudits().map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['ANI']||r['ani']||r['ANI Number']||'',r['Topic']||r['topic']||'',r['Pass or Fail'],r['Critical Error'],r['RTC']]);
+    cols=['Eval Date','Agent Name','QA','Skill','Score','Result','Critical','RTC'];
+    rowsData = agentWiseAudits().map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['Evaluation Score'],r['Pass or Fail'],r['Critical Error'],r['RTC']]);
     filename='audit_log';
   }
   const lines = [cols.join(',')].concat(rowsData.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')));
