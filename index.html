@@ -88,7 +88,7 @@
   .sidebar-foot{
     padding:16px 20px; font-size:11px; color:#6d768c;
     border-top:1px solid var(--navy-line);
-    white-space:nowrap;
+    white-space:nowrap; text-align:center;
   }
 
   .sidebar-reopen{
@@ -143,7 +143,7 @@
 
   .setup-banner{
     background:#fdf3e0; border-bottom:1px solid #ecd8a0; color:#7a5a0a;
-    padding:11px 28px; font-size:12.5px; display:none;
+    padding:11px 28px; font-size:12.5px; display:none; text-align:center;
   }
   .setup-banner.show{display:block;}
   .setup-banner code{background:#fff; border:1px solid #ecd8a0; padding:1px 5px; border-radius:3px; font-family:var(--mono);}
@@ -164,17 +164,17 @@
   .filterbar label{font-size:10.5px; color:var(--muted-dim);}
   .filterbar select, .filterbar input[type=text]{
     background:#fff; color:var(--ink); border:1px solid var(--line);
-    border-radius:7px; padding:8px 11px; font-family:var(--sans); font-size:12.5px; min-width:150px;
+    border-radius:7px; padding:8px 11px; font-family:var(--sans); font-size:12.5px; min-width:150px; text-align:center;
   }
   .filterbar select:focus, .filterbar input:focus{outline:1px solid var(--blue);}
 
-  /* KPI cards */
+  /* KPI cards - CENTERED */
   .kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px;}
   .kpi-card{
     background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:16px 18px; display:flex; flex-direction:column; gap:4px;
+    padding:16px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px;
   }
-  .kpi-card .kpi-top{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .kpi-card .kpi-top{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px; width:100%;}
   .kpi-icon{
     width:32px; height:32px; border-radius:9px; flex-shrink:0;
     display:flex; align-items:center; justify-content:center; font-size:15px;
@@ -185,52 +185,52 @@
   .kpi-icon.warn{background:var(--warn-dim); color:var(--warn);}
   .kpi-icon.purple{background:#efe9fc; color:var(--purple);}
   .kpi-card .kpi-label{font-size:12px; color:var(--muted); font-weight:600;}
-  .kpi-card .kpi-num{font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums;}
-  .kpi-card .kpi-sub{font-size:11px; color:var(--muted-dim);}
+  .kpi-card .kpi-num{font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; text-align:center;}
+  .kpi-card .kpi-sub{font-size:11px; color:var(--muted-dim); text-align:center;}
   .kpi-card .kpi-sub.good{color:var(--good);}
   .kpi-card .kpi-sub.bad{color:var(--bad);}
 
   /* Panels */
   .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px;}
-  .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px;}
+  .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px; text-align:center;}
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
   @media (max-width:960px){.grid-2, .grid-3{grid-template-columns:1fr;}}
 
-  /* Bars */
+  /* Bars - CENTERED */
   .bar-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
-  .bar-label{width:150px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink);}
+  .bar-label{width:160px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink); text-align:center !important;}
   .bar-track{flex:1; background:#eef1f7; height:14px; border-radius:4px; overflow:hidden;}
   .bar-fill{height:100%; border-radius:4px;}
   .bar-fill.blue{background:var(--blue);}
   .bar-fill.good{background:var(--good);}
   .bar-fill.bad{background:var(--bad);}
   .bar-fill.warn{background:var(--warn);}
-  .bar-val{width:90px; text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
+  .bar-val{width:100px; text-align:center !important; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
 
-  /* Empathy parameter cards */
+  /* Empathy parameter cards - CENTERED */
   .param-card{
     border-radius:12px; padding:14px 16px; border:1px solid var(--line);
-    background:var(--good-dim);
+    background:var(--good-dim); text-align:center !important;
   }
   .param-card.red{background:var(--bad-dim); border-color:#f3c7c1;}
-  .param-card .pname{font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px;}
-  .param-card .pval{font-size:22px; font-weight:800;}
+  .param-card .pname{font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px; text-align:center;}
+  .param-card .pval{font-size:22px; font-weight:800; text-align:center;}
   .param-card.red .pval{color:var(--bad);}
   .param-card:not(.red) .pval{color:var(--good);}
-  .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px;}
+  .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px; text-align:center;}
 
-  /* Tables */
-  table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px;}
+  /* Tables - STRICT CENTER ALIGNMENT FOR ALL HEADERS & DATA */
+  table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px; text-align:center !important;}
   thead th{
-    text-align:left; font-size:10.5px; color:var(--muted); font-weight:700;
+    text-align:center !important; font-size:10.5px; color:var(--muted); font-weight:700;
     padding:10px 11px; border-bottom:1.5px solid var(--line); position:sticky; top:0; background:var(--card);
     text-transform:uppercase; letter-spacing:0.03em;
   }
-  tbody td{padding:9px 11px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums;}
+  tbody td{padding:9px 11px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; text-align:center !important;}
   tbody tr:hover{background:#fafbfd;}
   .table-wrap{max-height:460px; overflow-y:auto; border:1px solid var(--line); border-radius:12px;}
-  .num{text-align:right; font-family:var(--mono);}
+  .num{text-align:center !important; font-family:var(--mono);}
   .pill{display:inline-block; padding:2px 9px; border-radius:5px; font-size:10.5px; font-weight:700;}
   .pill.pass, .pill.good{background:var(--good-dim); color:var(--good);}
   .pill.fail, .pill.bad{background:var(--bad-dim); color:var(--bad);}
@@ -238,20 +238,20 @@
   .cell-red{color:var(--bad); font-weight:700; background:var(--bad-dim);}
   .cell-good{color:var(--good); font-weight:600;}
 
-  .empty-note{padding:40px; text-align:center; color:var(--muted-dim); font-size:13px;}
-  footer{text-align:center; padding:24px; font-size:11px; color:var(--muted-dim); font-family:var(--mono);}
+  .empty-note{padding:40px; text-align:center !important; color:var(--muted-dim); font-size:13px;}
+  footer{text-align:center !important; padding:24px; font-size:11px; color:var(--muted-dim); font-family:var(--mono);}
 
-  /* Agent spotlight card */
+  /* Agent spotlight card - CENTERED */
   .spotlight{
     background:linear-gradient(135deg, #16243f, #24345f);
     border-radius:14px; padding:22px 26px; color:#fff; margin-bottom:20px;
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:24px; text-align:center;
   }
-  .spotlight .sp-name{font-size:19px; font-weight:800;}
-  .spotlight .sp-sub{font-size:12px; color:#aab2c5; margin-top:2px;}
-  .spotlight-metrics{display:flex; gap:28px; flex-wrap:wrap;}
-  .spotlight-metrics .sm-val{font-size:22px; font-weight:800; font-family:var(--mono);}
-  .spotlight-metrics .sm-label{font-size:10.5px; color:#aab2c5; margin-top:2px;}
+  .spotlight .sp-name{font-size:19px; font-weight:800; text-align:center;}
+  .spotlight .sp-sub{font-size:12px; color:#aab2c5; margin-top:2px; text-align:center;}
+  .spotlight-metrics{display:flex; gap:28px; flex-wrap:wrap; justify-content:center; text-align:center;}
+  .spotlight-metrics .sm-val{font-size:22px; font-weight:800; font-family:var(--mono); text-align:center;}
+  .spotlight-metrics .sm-label{font-size:10.5px; color:#aab2c5; margin-top:2px; text-align:center;}
 </style>
 </head>
 <body>
@@ -325,14 +325,14 @@
         </div>
       </section>
       <section>
-        <div class="section-head"><h2>Aligned Agent Leaderboards</h2></div>
+        <div class="section-head"><h2 style="width:100%; text-align:center;">Aligned Agent Leaderboards</h2></div>
         <div class="grid-2">
           <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top Scorers</h2></div>
+            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px; width:100%; text-align:center;">Top Scorers</h2></div>
             <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">Avg Score</th><th class="num">Audits</th></tr></thead><tbody id="ovTopScorers"></tbody></table></div>
           </div>
           <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Needs Attention (below empathy target)</h2></div>
+            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px; width:100%; text-align:center;">Needs Attention (below empathy target)</h2></div>
             <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">Empathy%</th><th class="num">Shortfall</th></tr></thead><tbody id="ovAttention"></tbody></table></div>
           </div>
         </div>
@@ -341,8 +341,8 @@
 
     <!-- ============ AGENT PERFORMANCE ============ -->
     <div class="page" id="page-agent">
-      <div class="filterbar">
-        <div class="fgroup"><label>Agent</label><select id="agentSelect" onchange="renderAgentPage()"><option value="">All Aligned Agents</option></select></div>
+      <div class="filterbar" style="justify-content:center;">
+        <div class="fgroup"><label style="text-align:center;">Agent</label><select id="agentSelect" onchange="renderAgentPage()"><option value="">All Aligned Agents</option></select></div>
       </div>
       <div class="spotlight" id="agentSpotlight" style="display:none;"></div>
       <section><div class="kpi-row" id="kpiAgent"></div></section>
@@ -407,8 +407,8 @@
 
     <!-- ============ AUDIT LOG ============ -->
     <div class="page" id="page-log">
-      <div class="filterbar">
-        <div class="fgroup" style="max-width:320px;"><label>Search</label><input type="text" id="logSearch" placeholder="Search agent, QA…" oninput="renderAuditLog()"></div>
+      <div class="filterbar" style="justify-content:center;">
+        <div class="fgroup" style="max-width:320px;"><label style="text-align:center;">Search</label><input type="text" id="logSearch" placeholder="Search agent, QA…" oninput="renderAuditLog()"></div>
       </div>
       <div class="table-wrap">
         <table>
@@ -425,16 +425,78 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwvq8rkhoDud264sm2cXD8jggqIw6KkHEti6wXCqykaUpe-lrpz7wblAhnzU8DC6nXA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxAo2jukOcQHqstW0-PXmgyV3XEUS6tNAtQ6qngPrzjcT5xADv_cpjN6u118g9OLK8P/exec";
 const REFRESH_INTERVAL_MS = 30000;
-const EMPATHY_AGENT_TARGET = 0.88;   // Agent Performance target
-const EMPATHY_PARAM_TARGET = 0.875;  // Empathy Parameter target (87.5%)
-const AHT_TARGET = 170;              // seconds
+const EMPATHY_AGENT_TARGET = 0.88;   
+const EMPATHY_PARAM_TARGET = 0.875;  
+const AHT_TARGET = 170;              
 const CFS_TARGET = 0.90;
 
-let DATA = { agentAudits: [], empathyWise: [], ort: [], alignment: [] };
+let DATA = { agentAudits: [], empathyWise: [], ort: [], Alignment: [] };
 
-// ---------- Fuzzy Key Normalizer ----------
+// ---------- TARGETED ALIGNMENT FILTERING ----------
+function getAlignmentList() {
+  if (!DATA) return [];
+  if (Array.isArray(DATA.Alignment)) return DATA.Alignment;
+  if (Array.isArray(DATA.alignment)) return DATA.alignment;
+  return [];
+}
+
+function getAgentIdentifiers(row) {
+  const ids = new Set();
+  if (!row || typeof row !== 'object') return ids;
+
+  // Exact primary keys from sheet: 'VDI ID' and 'Name'
+  const targetKeys = ['VDI ID', 'Name', 'VDI', 'Agent Name', 'Agent ID', 'EID'];
+
+  Object.keys(row).forEach(k => {
+    const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const isMatched = targetKeys.some(tk => tk.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanK);
+    
+    if (isMatched) {
+      const val = row[k];
+      if (val !== undefined && val !== null) {
+        const str = String(val).trim();
+        if (str !== '' && str !== '0' && str.toLowerCase() !== 'undefined' && str.toLowerCase() !== 'null') {
+          ids.add(str.toLowerCase().replace(/\s+/g, ' '));
+          ids.add(str.toLowerCase().replace(/[^a-z0-9]/g, ''));
+        }
+      }
+    }
+  });
+  return ids;
+}
+
+function alignmentAgentKeys() {
+  const set = new Set();
+  const list = getAlignmentList();
+  list.forEach(r => {
+    const ids = getAgentIdentifiers(r);
+    ids.forEach(id => set.add(id));
+  });
+  return set;
+}
+
+function isAlignedRecord(r) {
+  const alignList = getAlignmentList();
+  if (!alignList || alignList.length === 0) return true; // Fallback
+
+  const validKeys = alignmentAgentKeys();
+  if (validKeys.size === 0) return false;
+
+  const recordKeys = getAgentIdentifiers(r);
+  for (let key of recordKeys) {
+    if (validKeys.has(key)) return true;
+  }
+  return false;
+}
+
+function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
+function agentWiseAudits(){ return agentWiseRows(DATA.agentAudits); }
+function agentWiseOrt(){ return agentWiseRows(DATA.ort); }
+function agentWiseEmpathy(){ return agentWiseRows(DATA.empathyWise); }
+
+// ---------- Key Value Extractor ----------
 function getCleanVal(row, possibleKeys) {
   if (!row) return '';
   const rowKeys = Object.keys(row);
@@ -448,42 +510,6 @@ function getCleanVal(row, possibleKeys) {
   }
   return '';
 }
-
-// ---------- alignment-based agent visibility ----------
-function alignmentAgentKeys(){
-  const keys = new Set();
-  if(!DATA.alignment || !Array.isArray(DATA.alignment)) return keys;
-
-  DATA.alignment.forEach(r => {
-    const id = getCleanVal(r, ['VDI ID', 'VDI', 'EID', 'ID', 'Agent ID', 'Emp ID']);
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Employee Name']);
-    if(id) keys.add('id:' + id.toLowerCase());
-    if(name) keys.add('name:' + name.toLowerCase());
-  });
-  return keys;
-}
-
-function isAlignedRecord(r){
-  if (!DATA.alignment || !Array.isArray(DATA.alignment) || DATA.alignment.length === 0) {
-    return true; // If no alignment sheet at all, show everything
-  }
-
-  const keys = alignmentAgentKeys();
-  if (keys.size === 0) return false; // Alignment sheet exists but has no valid entries -> strict filter out
-
-  const id = getCleanVal(r, ['VDI ID', 'VDI', 'EID', 'ID', 'Agent ID', 'Emp ID']);
-  const name = getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'Employee Name']);
-
-  const hasId = id && keys.has('id:' + id.toLowerCase());
-  const hasName = name && keys.has('name:' + name.toLowerCase());
-
-  return Boolean(hasId || hasName);
-}
-
-function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
-function agentWiseAudits(){ return agentWiseRows(DATA.agentAudits); }
-function agentWiseOrt(){ return agentWiseRows(DATA.ort); }
-function agentWiseEmpathy(){ return agentWiseRows(DATA.empathyWise); }
 
 // ---------- helpers ----------
 const numOf = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
@@ -552,7 +578,7 @@ async function loadData(manual=false){
 
 async function loadSampleData(){
   try{ const res = await fetch('sample_data.json', {cache:'no-store'}); return await res.json(); }
-  catch(e){ return { agentAudits:[], empathyWise:[], ort:[], alignment:[] }; }
+  catch(e){ return { agentAudits:[], empathyWise:[], ort:[], Alignment:[] }; }
 }
 
 // ---------- sidebar toggle ----------
@@ -587,7 +613,7 @@ function renderCurrentPage(){
     document.getElementById('footerNote').textContent = 'No data loaded yet.';
   } else {
     document.getElementById('footerNote').textContent =
-      `${agentWiseAudits().length} aligned audits (${DATA.agentAudits.length} team total) · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
+      `${agentWiseAudits().length} aligned audits (${DATA.agentAudits.length} total raw audits) · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
   }
   populateAgentSelect();
   if(CURRENT_PAGE==='overview') renderOverview();
@@ -626,7 +652,7 @@ function agentAggregates(){
 
 function renderOverview(){
   const box = document.getElementById('kpiOverview'); box.innerHTML='';
-  const rows = agentWiseAudits(); // Strictly use aligned agent audits only
+  const rows = agentWiseAudits();
   const total = rows.length;
   const passCount = rows.filter(r=>isPass(r['Pass or Fail'])).length;
   const failCount = total - passCount;
@@ -684,7 +710,7 @@ function renderOverview(){
   const maxReason = Math.max(1,...reasonCounts.map(r=>r.count));
   reasonCounts.forEach(r=>{
     const row = el('div',{class:'bar-row'});
-    row.appendChild(el('div',{class:'bar-label', style:'width:220px;'}, r.label));
+    row.appendChild(el('div',{class:'bar-label'}, r.label));
     const track = el('div',{class:'bar-track'});
     track.appendChild(el('div',{class:'bar-fill bad', style:`width:${Math.max(2,(r.count/maxReason)*100)}%`}));
     row.appendChild(track);
@@ -733,12 +759,12 @@ function populateAgentSelect(){
 }
 
 function renderAgentPage(){
-  const aggs = agentAggregates(); // Filtered to aligned agents
+  const aggs = agentAggregates();
   const selected = document.getElementById('agentSelect').value;
   const spotlight = document.getElementById('agentSpotlight');
 
   const box = document.getElementById('kpiAgent'); box.innerHTML='';
-  const totalAudits = aggs.reduce((s,a)=>s+a.total,0);
+  const totalAudits = aggs.reduce((s,a)=>s+total,0);
   const totalFail = aggs.reduce((s,a)=>s+a.fail,0);
   const teamEp = aggs.reduce((s,a)=>s+a.ep,0), teamEf = aggs.reduce((s,a)=>s+a.ef,0);
   const teamEmpPct = (teamEp+teamEf)>0 ? teamEp/(teamEp+teamEf) : 0;
@@ -789,7 +815,7 @@ function renderAgentPage(){
 const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speech Clarity / Clarity of Communication','Proper Listening','Personalization','Time / Hold Management','Emotional Tone with Courtesy','Closing Courtesy'];
 
 function renderEmpathyPage(){
-  const rows = agentWiseEmpathy(); // Filtered to aligned agents only
+  const rows = agentWiseEmpathy();
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
 
   EMPATHY_PARAMS.forEach(param => {
@@ -828,7 +854,7 @@ function renderEmpathyPage(){
 
 // ============ ADHERENCE & BREAK PAGE ============
 function renderAdherencePage(){
-  const rows = agentWiseOrt(); // Aligned agents only
+  const rows = agentWiseOrt();
   
   const box = document.getElementById('kpiAdherence'); box.innerHTML='';
   const adherenceVals = rows.map(r => normPct(getCleanVal(r, ['Adherence%', 'Adherence']))).filter(v=>v!==null);
@@ -863,7 +889,7 @@ function renderAdherencePage(){
 
 // ============ AHT & CFS PAGE ============
 function renderAhtCfsPage(){
-  const rows = agentWiseOrt(); // Aligned agents only
+  const rows = agentWiseOrt();
   
   const box = document.getElementById('kpiAhtCfs'); box.innerHTML='';
   const ahtVals = rows.map(r=>numOf(getCleanVal(r, ['AHT']))).filter(v=>v>0);
