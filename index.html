@@ -88,9 +88,10 @@
   .sidebar-foot{
     padding:16px 20px; font-size:11px; color:#6d768c;
     border-top:1px solid var(--navy-line);
-    white-space:nowrap; text-align:center;
+    white-space:nowrap;
   }
 
+  /* Floating reopen button, shown only while sidebar is collapsed */
   .sidebar-reopen{
     position:fixed; top:16px; left:16px; z-index:60;
     width:34px; height:34px; border-radius:8px;
@@ -101,6 +102,7 @@
   body.sidebar-collapsed .sidebar-reopen{display:flex;}
   .sidebar-reopen:hover{background:#1c2c4c;}
 
+  /* Toggle button inside the sidebar */
   #sidebarToggle{
     background:none; border:1px solid var(--navy-line); color:#aab2c5;
     width:26px; height:26px; border-radius:6px; cursor:pointer;
@@ -143,7 +145,7 @@
 
   .setup-banner{
     background:#fdf3e0; border-bottom:1px solid #ecd8a0; color:#7a5a0a;
-    padding:11px 28px; font-size:12.5px; display:none; text-align:center;
+    padding:11px 28px; font-size:12.5px; display:none;
   }
   .setup-banner.show{display:block;}
   .setup-banner code{background:#fff; border:1px solid #ecd8a0; padding:1px 5px; border-radius:3px; font-family:var(--mono);}
@@ -164,7 +166,7 @@
   .filterbar label{font-size:10.5px; color:var(--muted-dim);}
   .filterbar select, .filterbar input[type=text]{
     background:#fff; color:var(--ink); border:1px solid var(--line);
-    border-radius:7px; padding:8px 11px; font-family:var(--sans); font-size:12.5px; min-width:150px; text-align:center;
+    border-radius:7px; padding:8px 11px; font-family:var(--sans); font-size:12.5px; min-width:150px;
   }
   .filterbar select:focus, .filterbar input:focus{outline:1px solid var(--blue);}
 
@@ -172,9 +174,9 @@
   .kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px;}
   .kpi-card{
     background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:16px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px;
+    padding:16px 18px; display:flex; flex-direction:column; gap:4px;
   }
-  .kpi-card .kpi-top{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px; width:100%;}
+  .kpi-card .kpi-top{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
   .kpi-icon{
     width:32px; height:32px; border-radius:9px; flex-shrink:0;
     display:flex; align-items:center; justify-content:center; font-size:15px;
@@ -185,40 +187,52 @@
   .kpi-icon.warn{background:var(--warn-dim); color:var(--warn);}
   .kpi-icon.purple{background:#efe9fc; color:var(--purple);}
   .kpi-card .kpi-label{font-size:12px; color:var(--muted); font-weight:600;}
-  .kpi-card .kpi-num{font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; text-align:center;}
-  .kpi-card .kpi-sub{font-size:11px; color:var(--muted-dim); text-align:center;}
+  .kpi-card .kpi-num{font-size:26px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums;}
+  .kpi-card .kpi-sub{font-size:11px; color:var(--muted-dim);}
   .kpi-card .kpi-sub.good{color:var(--good);}
   .kpi-card .kpi-sub.bad{color:var(--bad);}
 
   /* Panels */
   .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px;}
-  .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px; text-align:center;}
+  .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px;}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
-  @media (max-width:960px){.grid-3{grid-template-columns:1fr;}}
+  @media (max-width:960px){.grid-2, .grid-3{grid-template-columns:1fr;}}
+
+  /* Bars */
+  .bar-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
+  .bar-label{width:150px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink);}
+  .bar-track{flex:1; background:#eef1f7; height:14px; border-radius:4px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:4px;}
+  .bar-fill.blue{background:var(--blue);}
+  .bar-fill.good{background:var(--good);}
+  .bar-fill.bad{background:var(--bad);}
+  .bar-fill.warn{background:var(--warn);}
+  .bar-val{width:90px; text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
 
   /* Empathy parameter cards */
   .param-card{
     border-radius:12px; padding:14px 16px; border:1px solid var(--line);
-    background:var(--good-dim); text-align:center !important;
+    background:var(--good-dim);
   }
   .param-card.red{background:var(--bad-dim); border-color:#f3c7c1;}
-  .param-card .pname{font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px; text-align:center;}
-  .param-card .pval{font-size:22px; font-weight:800; text-align:center;}
+  .param-card .pname{font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:6px;}
+  .param-card .pval{font-size:22px; font-weight:800;}
   .param-card.red .pval{color:var(--bad);}
   .param-card:not(.red) .pval{color:var(--good);}
-  .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px; text-align:center;}
+  .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px;}
 
   /* Tables */
-  table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px; text-align:center !important;}
+  table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px;}
   thead th{
-    text-align:center !important; font-size:10.5px; color:var(--muted); font-weight:700;
+    text-align:left; font-size:10.5px; color:var(--muted); font-weight:700;
     padding:10px 11px; border-bottom:1.5px solid var(--line); position:sticky; top:0; background:var(--card);
     text-transform:uppercase; letter-spacing:0.03em;
   }
-  tbody td{padding:9px 11px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; text-align:center !important;}
+  tbody td{padding:9px 11px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums;}
   tbody tr:hover{background:#fafbfd;}
   .table-wrap{max-height:460px; overflow-y:auto; border:1px solid var(--line); border-radius:12px;}
-  .num{text-align:center !important; font-family:var(--mono);}
+  .num{text-align:right; font-family:var(--mono);}
   .pill{display:inline-block; padding:2px 9px; border-radius:5px; font-size:10.5px; font-weight:700;}
   .pill.pass, .pill.good{background:var(--good-dim); color:var(--good);}
   .pill.fail, .pill.bad{background:var(--bad-dim); color:var(--bad);}
@@ -226,20 +240,20 @@
   .cell-red{color:var(--bad); font-weight:700; background:var(--bad-dim);}
   .cell-good{color:var(--good); font-weight:600;}
 
-  .empty-note{padding:40px; text-align:center !important; color:var(--muted-dim); font-size:13px;}
-  footer{text-align:center !important; padding:24px; font-size:11px; color:var(--muted-dim); font-family:var(--mono);}
+  .empty-note{padding:40px; text-align:center; color:var(--muted-dim); font-size:13px;}
+  footer{text-align:center; padding:24px; font-size:11px; color:var(--muted-dim); font-family:var(--mono);}
 
   /* Agent spotlight card */
   .spotlight{
     background:linear-gradient(135deg, #16243f, #24345f);
     border-radius:14px; padding:22px 26px; color:#fff; margin-bottom:20px;
-    display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:24px; text-align:center;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;
   }
-  .spotlight .sp-name{font-size:19px; font-weight:800; text-align:center;}
-  .spotlight .sp-sub{font-size:12px; color:#aab2c5; margin-top:2px; text-align:center;}
-  .spotlight-metrics{display:flex; gap:28px; flex-wrap:wrap; justify-content:center; text-align:center;}
-  .spotlight-metrics .sm-val{font-size:22px; font-weight:800; font-family:var(--mono); text-align:center;}
-  .spotlight-metrics .sm-label{font-size:10.5px; color:#aab2c5; margin-top:2px; text-align:center;}
+  .spotlight .sp-name{font-size:19px; font-weight:800;}
+  .spotlight .sp-sub{font-size:12px; color:#aab2c5; margin-top:2px;}
+  .spotlight-metrics{display:flex; gap:28px; flex-wrap:wrap;}
+  .spotlight-metrics .sm-val{font-size:22px; font-weight:800; font-family:var(--mono);}
+  .spotlight-metrics .sm-label{font-size:10.5px; color:#aab2c5; margin-top:2px;}
 </style>
 </head>
 <body>
@@ -280,7 +294,7 @@
 
   <div class="setup-banner" id="setupBanner">
     One more step: open this file in a text editor and replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code>
-    with your Apps Script Web app URL.
+    with your Apps Script Web app URL. Until then this shows sample data.
   </div>
 
   <main>
@@ -288,36 +302,40 @@
     <!-- ============ OVERVIEW ============ -->
     <div class="page active" id="page-overview">
       <section><div class="kpi-row" id="kpiOverview"></div></section>
-
       <section>
-        <div class="section-head"><h2 style="width:100%; text-align:center;">Team Leaderboards</h2></div>
-        <div class="grid-3">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">AUDIT VOLUME BY SKILL</div>
+            <div id="ovSkillBars"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">VOLUME BY SITE</div>
+            <div id="ovSiteBars"></div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">TOP FAILURE REASONS (from Audit Party parameter fails)</div>
+            <div id="ovFailReasons"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">EMPATHY VS AUDIT PASS RATE BY AGENT</div>
+            <div id="ovEmpathyCompare"></div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="section-head"><h2>Agent Leaderboard</h2></div>
+        <div class="grid-2">
           <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px; width:100%; text-align:center;">Top 05 CFS</h2></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>#</th><th>Agent</th><th class="num">CFS %</th></tr></thead>
-                <tbody id="ovTopCfs"></tbody>
-              </table>
-            </div>
+            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top Scorers</h2></div>
+            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">Avg Score</th><th class="num">Audits</th></tr></thead><tbody id="ovTopScorers"></tbody></table></div>
           </div>
           <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px; width:100%; text-align:center;">Top 05 AHT (Lowest)</h2></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>#</th><th>Agent</th><th class="num">AHT (sec)</th></tr></thead>
-                <tbody id="ovTopAht"></tbody>
-              </table>
-            </div>
-          </div>
-          <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px; width:100%; text-align:center;">Top 05 Empathy Holder</h2></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>#</th><th>Agent</th><th class="num">Empathy %</th></tr></thead>
-                <tbody id="ovTopEmpathy"></tbody>
-              </table>
-            </div>
+            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Needs Attention (below empathy target)</h2></div>
+            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">Empathy%</th><th class="num">Shortfall</th></tr></thead><tbody id="ovAttention"></tbody></table></div>
           </div>
         </div>
       </section>
@@ -325,13 +343,13 @@
 
     <!-- ============ AGENT PERFORMANCE ============ -->
     <div class="page" id="page-agent">
-      <div class="filterbar" style="justify-content:center;">
-        <div class="fgroup"><label style="text-align:center;">Agent</label><select id="agentSelect" onchange="renderAgentPage()"><option value="">All Agents</option></select></div>
+      <div class="filterbar">
+        <div class="fgroup"><label>Agent</label><select id="agentSelect" onchange="renderAgentPage()"><option value="">All Agents</option></select></div>
       </div>
       <div class="spotlight" id="agentSpotlight" style="display:none;"></div>
       <section><div class="kpi-row" id="kpiAgent"></div></section>
       <section>
-        <div class="section-head"><h2>Agent Performance Table</h2><span class="hint">audits, pass/fail, empathy % vs 88% target</span></div>
+        <div class="section-head"><h2>Agent Performance Table</h2><span class="hint">total audits, pass/fail, empathy % vs 88% target</span></div>
         <div class="table-wrap">
           <table>
             <thead><tr>
@@ -347,11 +365,11 @@
     <!-- ============ EMPATHY ANALYSIS ============ -->
     <div class="page" id="page-empathy">
       <section>
-        <div class="section-head"><h2>Empathy Parameter — Pass % (Aligned via Alignment Sheet VDI ID)</h2><span class="hint">red if below 87.5% target</span></div>
+        <div class="section-head"><h2>Empathy Parameter — Overall Pass %</h2><span class="hint">red if below 87.5% target</span></div>
         <div class="grid-3" id="empathyParamCards" style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;"></div>
       </section>
       <section>
-        <div class="section-head"><h2>VDI ID &amp; Agent Matrix</h2><span class="hint">cells below 87.5% highlighted red</span></div>
+        <div class="section-head"><h2>Agent × Parameter Matrix</h2><span class="hint">cells below 87.5% highlighted red</span></div>
         <div class="table-wrap">
           <table>
             <thead><tr id="empathyMatrixHead"></tr></thead>
@@ -365,10 +383,10 @@
     <div class="page" id="page-adherence">
       <section><div class="kpi-row" id="kpiAdherence"></div></section>
       <section>
-        <div class="section-head"><h2>Agent Adherence, Extra Break &amp; Lag Time</h2></div>
+        <div class="section-head"><h2>Agent-wise Adherence, Over Break &amp; Lag Hour</h2></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Agent Name</th><th class="num">Adherence %</th><th class="num">Extra Break</th><th class="num">Lag Time</th></tr></thead>
+            <thead><tr><th>Agent</th><th class="num">Adherence %</th><th class="num">Over Break</th><th class="num">Lag Hour</th></tr></thead>
             <tbody id="adherenceTable"></tbody>
           </table>
         </div>
@@ -379,7 +397,7 @@
     <div class="page" id="page-ahtcfs">
       <section><div class="kpi-row" id="kpiAhtCfs"></div></section>
       <section>
-        <div class="section-head"><h2>Agent AHT &amp; CFS</h2><span class="hint">AHT target: 170s · CFS target: 90%</span></div>
+        <div class="section-head"><h2>Agent-wise AHT &amp; CFS</h2><span class="hint">AHT target: 170s · CFS target: 90%</span></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Agent</th><th class="num">AHT (sec)</th><th>AHT Status</th><th class="num">CFS %</th><th>CFS Status</th></tr></thead>
@@ -391,13 +409,13 @@
 
     <!-- ============ AUDIT LOG ============ -->
     <div class="page" id="page-log">
-      <div class="filterbar" style="justify-content:center;">
-        <div class="fgroup" style="max-width:320px;"><label style="text-align:center;">Search</label><input type="text" id="logSearch" placeholder="Search agent, QA, ANI, Topic…" oninput="renderAuditLog()"></div>
+      <div class="filterbar">
+        <div class="fgroup" style="max-width:320px;"><label>Search</label><input type="text" id="logSearch" placeholder="Search agent, QA…" oninput="renderAuditLog()"></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Eval date</th><th>Agent</th><th>QA</th><th>ANI</th><th>Topic</th><th>Skill</th><th>Result</th><th>Critical</th><th>RTC</th>
+            <th>Eval date</th><th>Agent</th><th>QA</th><th>Skill</th><th class="num">Score</th><th>Result</th><th>Critical</th><th>RTC</th>
           </tr></thead>
           <tbody id="auditLogTable"></tbody>
         </table>
@@ -409,138 +427,65 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz_Zg6y-LO3SJykHyXcGWoYzS8L91MIIzp5n6Thko_lhtedKVWxwxrmORGoF5B78hGt/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwvq8rkhoDud264sm2cXD8jggqIw6KkHEti6wXCqykaUpe-lrpz7wblAhnzU8DC6nXA/exec";
 const REFRESH_INTERVAL_MS = 30000;
-const EMPATHY_AGENT_TARGET = 0.88;   
-const EMPATHY_PARAM_TARGET = 0.875;  
-const AHT_TARGET = 170;              
+const EMPATHY_AGENT_TARGET = 0.88;   // Agent Performance page target
+const EMPATHY_PARAM_TARGET = 0.875;  // Empathy Analysis page red-flag threshold
+const AHT_TARGET = 170;              // seconds
 const CFS_TARGET = 0.90;
 
-let DATA = { agentAudits: [], empathyWise: [], ort: [], Alignment: [] };
+let DATA = { agentAudits: [], empathyWise: [], ort: [], alignment: [] };
 
-// ---------- ROBUST COLUMN VALUE EXTRACTOR ----------
-function getCleanVal(row, possibleKeys) {
-  if (!row || typeof row !== 'object') return '';
-  const rowKeys = Object.keys(row);
-  for (const pKey of possibleKeys) {
-    const target = pKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const actualKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
-    if (actualKey && row[actualKey] !== undefined && row[actualKey] !== null) {
-      const val = String(row[actualKey]).trim();
-      if (val !== '') return val;
-    }
-  }
-  return '';
-}
-
-// RAW UNFILTERED DATA ACCESS
-function allAudits() { return DATA.agentAudits || []; }
-function allOrt() { return DATA.ort || []; }
-function rawEmpathy() { return DATA.empathyWise || []; }
-
-// ALIGNMENT MAP: VDI ID -> AGENT NAME LOOKUP
-function getAlignmentMap() {
-  const map = new Map();
-  const alignmentList = DATA.Alignment || [];
-  alignmentList.forEach(r => {
-    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI', 'VDIID']);
-    const name = getCleanVal(r, ['Agent Name', 'Name', 'Employee Name', 'Emp Name', 'Agent']);
-    if (vdi) {
-      map.set(vdi.toLowerCase().trim(), name || 'Unknown');
-    }
+// ---------- alignment-based agent visibility ----------
+// Only agents present in the Alignment sheet are shown in agent-wise views.
+// Team/overview data remains untouched, so team totals continue to include all records.
+function alignmentAgentKeys(){
+  const keys = new Set();
+  (DATA.alignment || []).forEach(r => {
+    const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? '').trim().toLowerCase();
+    const name = String(r['Name'] ?? r['Agent Name'] ?? '').trim().toLowerCase();
+    if(id) keys.add('id:'+id);
+    if(name) keys.add('name:'+name);
   });
-  return map;
+  return keys;
 }
-
-// GET ALIGNED EMPATHY DATA WITH LOOKUP
-function getAlignedEmpathyData() {
-  const alignMap = getAlignmentMap();
-  const empRows = rawEmpathy();
-  const result = [];
-
-  empRows.forEach(r => {
-    // Extract VDI ID from Empathy sheet
-    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI', 'VDIID', 'VDI_No']);
-    const cleanVdi = vdi.toLowerCase().trim();
-    
-    // Extract Name directly from Empathy sheet as baseline fallback
-    const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
-    
-    // Try lookup in Alignment sheet
-    let finalName = nameFromEmp;
-    if (cleanVdi && alignMap.has(cleanVdi)) {
-      finalName = alignMap.get(cleanVdi) || nameFromEmp;
-    }
-
-    // Always push the record so no data gets hidden
-    result.push({
-      ...r,
-      _vdiId: vdi || 'N/A',
-      _agentName: finalName || 'Unknown Agent'
-    });
-  });
-
-  return result;
+function isAlignedRecord(r){
+  const keys = alignmentAgentKeys();
+  if(keys.size===0) return true; // preserve current behavior if Alignment is unavailable/empty
+  const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? '').trim().toLowerCase();
+  const name = String(r['Name'] ?? r['Agent Name'] ?? '').trim().toLowerCase();
+  return (id && keys.has('id:'+id)) || (name && keys.has('name:'+name));
 }
-    } else {
-      // Fallback if Alignment is empty/not passed yet
-      const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
-      result.push({
-        ...r,
-        _vdiId: vdi || '—',
-        _agentName: nameFromEmp || 'Unknown'
-      });
-    }
-  });
+function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
+function agentWiseAudits(){ return agentWiseRows(DATA.agentAudits); }
+function agentWiseOrt(){ return agentWiseRows(DATA.ort); }
+function agentWiseEmpathy(){ return agentWiseRows(DATA.empathyWise); }
 
-  return result;
-}
-
-// ---------- HELPERS ----------
+// ---------- helpers ----------
 const numOf = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const pct = (n) => (n*100).toFixed(1) + '%';
 const isPass = (v) => String(v||'').trim().toLowerCase() === 'pass';
 function el(tag, attrs={}, html=''){ const e=document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); e.innerHTML=html; return e; }
 function groupBy(arr, keyFn){ const m=new Map(); arr.forEach(r=>{const k=keyFn(r); if(!m.has(k)) m.set(k,[]); m.get(k).push(r);}); return m; }
 
+// normalize a value that might be "87.50%", 0.875, or "0.875"
 function normPct(v){
   if(v === null || v === undefined || v === '') return null;
   if(typeof v === 'string' && v.trim().toUpperCase() === 'NA') return null;
   if(typeof v === 'string' && v.includes('%')) return parseFloat(v.replace('%','')) / 100;
   const n = parseFloat(v);
   if(isNaN(n)) return null;
-  return n > 1 ? n / 100 : n;
+  return n; // assume already a 0-1 fraction
 }
-
-function parseDurationHours(v) {
-  if (v === null || v === undefined) return 0;
-  let s = String(v).trim();
-  if (!s || s === '0' || s === '00:00:00' || s === '00:00' || s.toLowerCase().startsWith('no') || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') return 0;
-  
-  let num = Number(s);
-  if (!isNaN(num)) {
-    if (num > 0 && num <= 1.0) return num * 24;
-    return num; 
-  }
-
-  if (s.toLowerCase().includes('m') && !s.includes(':')) {
-    let mins = parseFloat(s);
-    return isNaN(mins) ? 0 : mins / 60;
-  }
-  if (s.toLowerCase().includes('h') && !s.includes(':')) {
-    let hrs = parseFloat(s);
-    return isNaN(hrs) ? 0 : hrs;
-  }
-
-  if (s.includes(':')) {
-    let parts = s.split(':').map(Number);
-    if (parts.some(isNaN)) return 0;
-    if (parts.length === 3) return parts[0] + parts[1]/60 + parts[2]/3600;
-    if (parts.length === 2) return parts[0] + parts[1]/60;
-  }
-  return 0;
+// parse "HH:MM:SS" or "No Lag"/"No Extra Break" into decimal hours
+function parseDurationHours(v){
+  if(!v || typeof v !== 'string') return 0;
+  const s = v.trim();
+  if(s.toLowerCase().startsWith('no ')) return 0;
+  const parts = s.split(':').map(Number);
+  if(parts.length !== 3 || parts.some(isNaN)) return 0;
+  return parts[0] + parts[1]/60 + parts[2]/3600;
 }
-
 function fmtHoursMin(hoursDecimal){
   if(hoursDecimal <= 0) return '—';
   const totalMin = Math.round(hoursDecimal * 60);
@@ -548,7 +493,7 @@ function fmtHoursMin(hoursDecimal){
   return h>0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-// ---------- DATA LOADING ----------
+// ---------- data loading ----------
 async function loadData(manual=false){
   const btn = document.getElementById('refreshBtn');
   const chip = document.getElementById('liveChip');
@@ -559,7 +504,7 @@ async function loadData(manual=false){
     document.getElementById('setupBanner').classList.add('show');
     DATA = await loadSampleData();
     chip.classList.add('stale');
-    statusText.textContent = 'Sample data — connect your sheet';
+    statusText.textContent = 'Sample data — connect your sheet (see banner)';
     renderCurrentPage();
     if(manual){ btn.disabled=false; btn.textContent='Refresh now'; }
     return;
@@ -571,37 +516,53 @@ async function loadData(manual=false){
     DATA = json;
     chip.classList.remove('stale');
     const t = new Date(json.generatedAt || Date.now());
-    statusText.textContent = `Live · updated ${t.toLocaleTimeString()}`;
+    const missing = [];
+    if(!json.empathyWise || json.empathyWise.length===0) missing.push('Empathy wise');
+    if(!json.ort || json.ort.length===0) missing.push('ORT');
+    if(missing.length>0 && json.debug && json.debug.availableSheetNames){
+      statusText.textContent = `Live, but ${missing.join(' & ')} returned 0 rows. Tabs found in sheet: ${json.debug.availableSheetNames.join(', ')}`;
+      chip.classList.add('stale');
+    } else {
+      statusText.textContent = `Live · updated ${t.toLocaleTimeString()}`;
+    }
     renderCurrentPage();
   }catch(err){
     chip.classList.add('stale');
-    statusText.textContent = 'Connection issue — showing last known data';
+    statusText.textContent = 'Connection issue — showing last known data (' + err.message + ')';
   }finally{
     if(manual){ btn.disabled=false; btn.textContent='Refresh now'; }
   }
 }
-
 async function loadSampleData(){
   try{ const res = await fetch('sample_data.json', {cache:'no-store'}); return await res.json(); }
-  catch(e){ return { agentAudits:[], empathyWise:[], ort:[], Alignment:[] }; }
+  catch(e){ return { agentAudits:[], empathyWise:[], ort:[], alignment:[] }; }
 }
 
-// ---------- SIDEBAR TOGGLE ----------
+// ---------- sidebar toggle ----------
 function toggleSidebar(){
   document.body.classList.toggle('sidebar-collapsed');
+  try{
+    localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed') ? '1' : '0');
+  }catch(e){ /* localStorage unavailable - ignore */ }
 }
+(function initSidebarState(){
+  try{
+    if(localStorage.getItem('sidebarCollapsed') === '1'){
+      document.body.classList.add('sidebar-collapsed');
+    }
+  }catch(e){ /* localStorage unavailable - ignore */ }
+})();
 
-// ---------- PAGE ROUTING ----------
+// ---------- page routing ----------
 const PAGE_META = {
   overview:   {title:'Dashboard Overview', sub:'Team performance summary'},
   agent:      {title:'Agent Performance', sub:'From IB Agent Wise — audits, pass/fail, empathy vs 88% target'},
-  empathy:    {title:'Empathy Analysis', sub:'From Empathy Wise — aligned using VDI ID & lookup from Alignment sheet'},
-  adherence:  {title:'Adherence & Break', sub:'From ORT — adherence, extra break, lag time'},
+  empathy:    {title:'Empathy Analysis', sub:'From Empathy Wise — parameter pass % vs 87.5% target'},
+  adherence:  {title:'Adherence & Break', sub:'From ORT — adherence, over break, lag hour'},
   ahtcfs:     {title:'AHT & CFS', sub:'From ORT — AHT target 170s, CFS target 90%'},
   log:        {title:'Audit Log', sub:'Raw call-level audit records'}
 };
 let CURRENT_PAGE = 'overview';
-
 function setPage(name){
   CURRENT_PAGE = name;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -612,13 +573,12 @@ function setPage(name){
   document.getElementById('pageSub').textContent = PAGE_META[name].sub;
   renderCurrentPage();
 }
-
 function renderCurrentPage(){
-  if(allAudits().length===0 && allOrt().length===0 && rawEmpathy().length===0){
+  if(DATA.agentAudits.length===0 && DATA.ort.length===0 && DATA.empathyWise.length===0){
     document.getElementById('footerNote').textContent = 'No data loaded yet.';
   } else {
     document.getElementById('footerNote').textContent =
-      `${allAudits().length} audits · ${allOrt().length} ORT records · ${rawEmpathy().length} empathy records · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
+      `${DATA.agentAudits.length} audits · ${DATA.ort.length} agents (ORT) · ${DATA.empathyWise.length} agents (Empathy) · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
   }
   populateAgentSelect();
   if(CURRENT_PAGE==='overview') renderOverview();
@@ -639,95 +599,128 @@ function kpiCard(container, label, value, iconClass, icon, sub='', subClass=''){
 
 // ============ OVERVIEW ============
 function agentAggregates(){
-  const byAgent = groupBy(allAudits(), r => getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'VDI ID']) || 'Unknown');
+  const byAgent = groupBy(agentWiseAudits(), r=>r['Agent Name']||'Unknown');
   const out = [];
   byAgent.forEach((rows, agent) => {
     if(!agent || agent==='Unknown') return;
     const total = rows.length;
-    const pass = rows.filter(r=>isPass(getCleanVal(r, ['Pass or Fail', 'Result']))).length;
+    const pass = rows.filter(r=>isPass(r['Pass or Fail'])).length;
     const fail = total - pass;
-    const ep = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Pass Count', 'Emp Pass', 'Empathy Pass'])),0);
-    const ef = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Fail Count', 'Emp Fail', 'Empathy Fail'])),0);
+    const ep = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Pass Count']),0);
+    const ef = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
     const empPct = (ep+ef)>0 ? ep/(ep+ef) : null;
-    const avgScore = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Evaluation Score', 'Score'])),0) / total;
+    const avgScore = rows.reduce((s,r)=>s+numOf(r['Evaluation Score']),0) / total;
     out.push({agent, total, pass, fail, failPct: fail/total, ep, ef, empPct, avgScore});
-  });
-  return out;
-}
-
-function ortAgentAggregates() {
-  const rows = allOrt();
-  const map = new Map();
-  rows.forEach(r => {
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID', 'VDI']);
-    if (!name) return;
-    const aht = numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec', 'Average Handle Time']));
-    const cfs = normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %', 'Customer Satisfaction']));
-    if (!map.has(name)) {
-      map.set(name, { name, ahtVals: [], cfsVals: [] });
-    }
-    if (aht > 0) map.get(name).ahtVals.push(aht);
-    if (cfs !== null) map.get(name).cfsVals.push(cfs);
-  });
-  
-  const out = [];
-  map.forEach((val, name) => {
-    const avgAht = val.ahtVals.length ? val.ahtVals.reduce((a,b)=>a+b,0)/val.ahtVals.length : 0;
-    const avgCfs = val.cfsVals.length ? val.cfsVals.reduce((a,b)=>a+b,0)/val.cfsVals.length : null;
-    out.push({ name, aht: avgAht, cfs: avgCfs });
   });
   return out;
 }
 
 function renderOverview(){
   const box = document.getElementById('kpiOverview'); box.innerHTML='';
-  const rows = allAudits();
+  const rows = DATA.agentAudits;
   const total = rows.length;
-  const passCount = rows.filter(r=>isPass(getCleanVal(r, ['Pass or Fail', 'Result']))).length;
+  const passCount = rows.filter(r=>isPass(r['Pass or Fail'])).length;
   const failCount = total - passCount;
-  const epSum = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Pass Count', 'Emp Pass'])),0);
-  const efSum = rows.reduce((s,r)=>s+numOf(getCleanVal(r, ['Total Emp Parameter Fail Count', 'Emp Fail'])),0);
+  const critFree = rows.length ? rows.filter(r=>isPass(r['Critical Error'])).length/rows.length : 0;
+  const epSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Pass Count']),0);
+  const efSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
   const empPct = (epSum+efSum)>0 ? epSum/(epSum+efSum) : 0;
 
   kpiCard(box, 'Total Audits', total.toLocaleString(), 'blue', '▤');
   kpiCard(box, 'Pass Rate', total? pct(passCount/total) : '—', 'good', '✓', `${passCount} passed`, 'good');
   kpiCard(box, 'Fail Rate', total? pct(failCount/total) : '—', 'bad', '✕', `${failCount} failed`, failCount>0?'bad':'');
   kpiCard(box, 'Empathy Pass %', pct(empPct), empPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', empPct>=EMPATHY_AGENT_TARGET?'Meets 88% target':'Below 88% target', empPct>=EMPATHY_AGENT_TARGET?'good':'bad');
-  kpiCard(box, 'Total Agents', agentAggregates().length, 'purple', '☺');
+  kpiCard(box, 'Critical Error Free', pct(critFree), critFree>=0.9?'good':'warn', '⚑');
+  kpiCard(box, 'Agents Audited', new Set(rows.map(r=>r['Agent Name'])).size, 'purple', '☺');
 
-  const ortAggs = ortAgentAggregates();
-
-  // Top 05 CFS
-  const topCfsBody = document.getElementById('ovTopCfs'); topCfsBody.innerHTML='';
-  const topCfs = [...ortAggs].filter(a=>a.cfs!==null).sort((a,b)=>b.cfs-a.cfs).slice(0,5);
-  topCfs.forEach((a,i)=>{
-    topCfsBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.name}</td><td class="num cell-good">${pct(a.cfs)}</td>`));
+  // skill bars
+  const skillBox = document.getElementById('ovSkillBars'); skillBox.innerHTML='';
+  const bySkill = groupBy(rows, r=>r['Skill']||'Unknown');
+  const skillEntries = [...bySkill.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
+  if(skillEntries.length===0) skillBox.appendChild(el('div',{class:'empty-note'},'No data.'));
+  const maxSkill = Math.max(1,...skillEntries.map(([,r])=>r.length));
+  skillEntries.forEach(([skill,srows])=>{
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label'},skill));
+    const track = el('div',{class:'bar-track'});
+    track.appendChild(el('div',{class:'bar-fill blue', style:`width:${Math.max(2,(srows.length/maxSkill)*100)}%`}));
+    row.appendChild(track);
+    row.appendChild(el('div',{class:'bar-val'}, srows.length+' · '+pct(srows.filter(r=>isPass(r['Pass or Fail'])).length/srows.length)));
+    skillBox.appendChild(row);
   });
-  if(topCfs.length===0) topCfsBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No CFS data.</td>`));
 
-  // Top 05 AHT (Lowest)
-  const topAhtBody = document.getElementById('ovTopAht'); topAhtBody.innerHTML='';
-  const topAht = [...ortAggs].filter(a=>a.aht>0).sort((a,b)=>a.aht-b.aht).slice(0,5);
-  topAht.forEach((a,i)=>{
-    topAhtBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.name}</td><td class="num cell-good">${a.aht.toFixed(1)}s</td>`));
+  // site bars
+  const siteBox = document.getElementById('ovSiteBars'); siteBox.innerHTML='';
+  const bySite = groupBy(rows, r=>r['Site']||'Unknown');
+  const siteEntries = [...bySite.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
+  if(siteEntries.length===0) siteBox.appendChild(el('div',{class:'empty-note'},'No data.'));
+  const maxSite = Math.max(1,...siteEntries.map(([,r])=>r.length));
+  siteEntries.forEach(([site,srows])=>{
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label'},site));
+    const track = el('div',{class:'bar-track'});
+    track.appendChild(el('div',{class:'bar-fill good', style:`width:${Math.max(2,(srows.length/maxSite)*100)}%`}));
+    row.appendChild(track);
+    row.appendChild(el('div',{class:'bar-val'}, srows.length));
+    siteBox.appendChild(row);
   });
-  if(topAht.length===0) topAhtBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No AHT data.</td>`));
 
-  // Top 05 Empathy Holder
-  const topEmpBody = document.getElementById('ovTopEmpathy'); topEmpBody.innerHTML='';
+  // fail reasons (from Error Remarks not collected in this sheet's wanted cols, so fall back to Critical/RTC fail causes)
+  const failBox = document.getElementById('ovFailReasons'); failBox.innerHTML='';
+  const critFails = rows.filter(r=>!isPass(r['Critical Error']));
+  const rtcFails = rows.filter(r=>!isPass(r['RTC']));
+  const reasonCounts = [
+    {label:'Critical Error fails', count:critFails.length},
+    {label:'RTC fails', count:rtcFails.length},
+    {label:'Overall Fail (Pass or Fail)', count:failCount}
+  ].filter(r=>r.count>0).sort((a,b)=>b.count-a.count);
+  if(reasonCounts.length===0) failBox.appendChild(el('div',{class:'empty-note'},'No failures in current data.'));
+  const maxReason = Math.max(1,...reasonCounts.map(r=>r.count));
+  reasonCounts.forEach(r=>{
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label', style:'width:220px;'}, r.label));
+    const track = el('div',{class:'bar-track'});
+    track.appendChild(el('div',{class:'bar-fill bad', style:`width:${Math.max(2,(r.count/maxReason)*100)}%`}));
+    row.appendChild(track);
+    row.appendChild(el('div',{class:'bar-val'}, r.count));
+    failBox.appendChild(row);
+  });
+
+  // empathy vs pass rate by agent
+  const aggs = agentAggregates().filter(a=>a.empPct!==null);
+  const cmpBox = document.getElementById('ovEmpathyCompare'); cmpBox.innerHTML='';
+  if(aggs.length===0) cmpBox.appendChild(el('div',{class:'empty-note'},'No data.'));
+  aggs.sort((a,b)=>a.empPct-b.empPct).forEach(a=>{
+    const row = el('div',{class:'bar-row'});
+    row.appendChild(el('div',{class:'bar-label'}, a.agent));
+    const track = el('div',{class:'bar-track'});
+    track.appendChild(el('div',{class:`bar-fill ${a.empPct>=EMPATHY_AGENT_TARGET?'good':'bad'}`, style:`width:${Math.max(2,a.empPct*100)}%`}));
+    row.appendChild(track);
+    row.appendChild(el('div',{class:'bar-val'}, pct(a.empPct)));
+    cmpBox.appendChild(row);
+  });
+
+  // leaderboards
+  const topScorersBody = document.getElementById('ovTopScorers'); topScorersBody.innerHTML='';
+  const attentionBody = document.getElementById('ovAttention'); attentionBody.innerHTML='';
   const allAggs = agentAggregates();
-  const topEmp = [...allAggs].filter(a=>a.empPct!==null).sort((a,b)=>b.empPct-a.empPct).slice(0,5);
-  topEmp.forEach((a,i)=>{
-    topEmpBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num cell-good">${pct(a.empPct)}</td>`));
+  [...allAggs].sort((a,b)=>b.avgScore-a.avgScore).slice(0,8).forEach((a,i)=>{
+    topScorersBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${a.avgScore.toFixed(1)}</td><td class="num">${a.total}</td>`));
   });
-  if(topEmp.length===0) topEmpBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No Empathy data.</td>`));
+  if(topScorersBody.children.length===0) topScorersBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data.</td>`));
+  const belowTarget = allAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).sort((a,b)=>a.empPct-b.empPct);
+  belowTarget.slice(0,8).forEach((a,i)=>{
+    const shortfall = EMPATHY_AGENT_TARGET - a.empPct;
+    attentionBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${pct(a.empPct)}</td><td class="num cell-red">-${pct(shortfall)}</td>`));
+  });
+  if(attentionBody.children.length===0) attentionBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">Everyone meets the empathy target 🎉</td>`));
 }
 
 // ============ AGENT PERFORMANCE PAGE ============
 function populateAgentSelect(){
   const sel = document.getElementById('agentSelect');
   const current = sel.value;
-  const names = [...new Set(allAudits().map(r => getCleanVal(r, ['Agent Name', 'Name', 'Agent'])).filter(Boolean))].sort();
+  const names = [...new Set(agentWiseAudits().map(r=>r['Agent Name']).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">All Agents</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
   if(names.includes(current)) sel.value = current;
 }
@@ -737,6 +730,7 @@ function renderAgentPage(){
   const selected = document.getElementById('agentSelect').value;
   const spotlight = document.getElementById('agentSpotlight');
 
+  // KPIs (team-level, always shown)
   const box = document.getElementById('kpiAgent'); box.innerHTML='';
   const totalAudits = aggs.reduce((s,a)=>s+a.total,0);
   const totalFail = aggs.reduce((s,a)=>s+a.fail,0);
@@ -744,11 +738,12 @@ function renderAgentPage(){
   const teamEmpPct = (teamEp+teamEf)>0 ? teamEp/(teamEp+teamEf) : 0;
   const belowTarget = aggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).length;
 
-  kpiCard(box, 'Total Audits', totalAudits.toLocaleString(), 'blue', '▤');
-  kpiCard(box, 'Fail %', totalAudits? pct(totalFail/totalAudits):'—', 'bad', '✕');
-  kpiCard(box, 'Empathy %', pct(teamEmpPct), teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', teamEmpPct>=EMPATHY_AGENT_TARGET?'Meets target':'Below 88% target', teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad');
+  kpiCard(box, 'Team Audits', totalAudits, 'blue', '▤');
+  kpiCard(box, 'Team Fail %', totalAudits? pct(totalFail/totalAudits):'—', 'bad', '✕');
+  kpiCard(box, 'Team Empathy %', pct(teamEmpPct), teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', teamEmpPct>=EMPATHY_AGENT_TARGET?'Meets target':'Below 88% target', teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad');
   kpiCard(box, 'Below Empathy Target', belowTarget, belowTarget>0?'warn':'good', '⚑', `of ${aggs.length} agents`);
 
+  // spotlight
   if(selected){
     const a = aggs.find(x=>x.agent===selected);
     if(a){
@@ -766,9 +761,10 @@ function renderAgentPage(){
     } else { spotlight.style.display='none'; }
   } else { spotlight.style.display='none'; }
 
+  // table
   const tbody = document.getElementById('agentTable'); tbody.innerHTML='';
   const rowsToShow = selected ? aggs.filter(a=>a.agent===selected) : aggs;
-  if(rowsToShow.length===0){ tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No agent data.</td>`)); return; }
+  if(rowsToShow.length===0){ tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No data.</td>`)); return; }
   [...rowsToShow].sort((a,b)=>(a.empPct??1)-(b.empPct??1)).forEach(a=>{
     const shortfall = a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET ? EMPATHY_AGENT_TARGET-a.empPct : 0;
     tbody.appendChild(el('tr',{}, `
@@ -786,178 +782,114 @@ function renderAgentPage(){
 }
 
 // ============ EMPATHY ANALYSIS PAGE ============
-const EMPATHY_PARAMS = [
-  'Warm Greetings',
-  'Acknowledgment & Understanding',
-  'Speech Clarity / Clarity of Communication',
-  'Proper Listening',
-  'Personalization',
-  'Time / Hold Management',
-  'Emotional Tone with Courtesy',
-  'Closing Courtesy'
-];
-
-function getEmpathyVal(row, param) {
-  if (!row || typeof row !== 'object') return null;
-
-  let clean = getCleanVal(row, [param, param.replace(/\//g, ' '), param.split('/')[0].trim()]);
-  if (clean !== '') {
-    let p = normPct(clean);
-    if (p !== null) return p;
-  }
-
-  const keywords = {
-    'Warm Greetings': ['greeting', 'greet', 'warm'],
-    'Acknowledgment & Understanding': ['acknowledg', 'understand'],
-    'Speech Clarity / Clarity of Communication': ['clarity', 'speech', 'communicat'],
-    'Proper Listening': ['listen'],
-    'Personalization': ['personal'],
-    'Time / Hold Management': ['hold', 'time', 'management'],
-    'Emotional Tone with Courtesy': ['tone', 'courtesy', 'emotion'],
-    'Closing Courtesy': ['close', 'closing']
-  };
-
-  const kwList = keywords[param] || [];
-  for (const k of Object.keys(row)) {
-    const normK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
-    for (const kw of kwList) {
-      if (normK.includes(kw)) {
-        let p = normPct(row[k]);
-        if (p !== null) return p;
-      }
-    }
-  }
-  return null;
-}
+const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speech Clarity / Clarity of Communication','Proper Listening','Personalization','Time / Hold Management','Emotional Tone with Courtesy','Closing Courtesy'];
 
 function renderEmpathyPage(){
-  const rows = getAlignedEmpathyData();
+  const rows = DATA.empathyWise;
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
+  if(rows.length===0){
+    cardBox.appendChild(el('div',{class:'empty-note', style:'grid-column:1/-1;'},
+      `No data returned for the "Empathy wise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
+  }
 
   EMPATHY_PARAMS.forEach(param => {
     let wsum=0, csum=0;
     rows.forEach(r=>{
-      const audit = numOf(getCleanVal(r, ['Audit Count', 'Audits', 'Audit', 'Total Audits'])) || 1;
-      const val = getEmpathyVal(r, param);
-      if(val !== null){
-        wsum += val * audit;
-        csum += audit;
-      }
+      const audit = numOf(r['Audit Count']);
+      const val = normPct(r[param]);
+      if(audit>0 && val!==null){ wsum += val*audit; csum += audit; }
     });
-    const avg = csum > 0 ? wsum / csum : null;
-    const isRed = avg !== null && avg < EMPATHY_PARAM_TARGET;
+    const avg = csum>0 ? wsum/csum : null;
+    const isRed = avg!==null && avg < EMPATHY_PARAM_TARGET;
     cardBox.appendChild(el('div',{class:`param-card ${isRed?'red':''}`}, `
       <div class="pname">${param}</div>
-      <div class="pval">${avg!==null ? pct(avg) : '—'}</div>
+      <div class="pval">${avg!==null?pct(avg):'—'}</div>
       <div class="ptarget">target 87.5%</div>
     `));
   });
 
-  // Table Head: Explicit VDI ID Column + Agent Name Column
+  // matrix
+  const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Name']]));
   const head = document.getElementById('empathyMatrixHead');
-  head.innerHTML = '<th>VDI ID</th><th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
+  head.innerHTML = '<th>Agent</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
-  if(rows.length===0){ 
-    body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No empathy records found matching Alignment VDI IDs.</td>`)); 
-    return; 
-  }
-
+  if(rows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No data.</td>`)); return; }
   rows.forEach(r=>{
-    const vdi = r._vdiId || getCleanVal(r, ['VDI ID', 'VDI', 'Emp ID', 'ID']) || '—';
-    const name = r._agentName || getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'Emp Name']) || '—';
-    
-    let cells = `<td class="num">${vdi}</td><td>${name}</td>`;
+    const name = nameMap.get(r['VDI ID']) || r['VDI ID'];
+    let cells = `<td>${name}</td>`;
     EMPATHY_PARAMS.forEach(p=>{
-      const val = getEmpathyVal(r, p);
+      const val = normPct(r[p]);
       if(val===null){ cells += `<td class="num">—</td>`; }
       else { cells += `<td class="num ${val<EMPATHY_PARAM_TARGET?'cell-red':''}">${pct(val)}</td>`; }
     });
-    const audits = getCleanVal(r, ['Audit Count', 'Audits', 'Audit', 'Total Audits']) || '—';
-    cells += `<td class="num">${audits}</td>`;
+    cells += `<td class="num">${r['Audit Count']||0}</td>`;
     body.appendChild(el('tr',{}, cells));
   });
 }
 
 // ============ ADHERENCE & BREAK PAGE ============
 function renderAdherencePage(){
-  const rows = allOrt();
-  
+  const rows = DATA.ort;
   const box = document.getElementById('kpiAdherence'); box.innerHTML='';
-  const adherenceVals = rows.map(r => normPct(getCleanVal(r, ['Adherence%', 'Adherence', 'Adherence %', 'Sch Adherence']))).filter(v=>v!==null);
+  const adherenceVals = rows.map(r=>normPct(r['Adherence%'])).filter(v=>v!==null);
   const avgAdherence = adherenceVals.length ? adherenceVals.reduce((a,b)=>a+b,0)/adherenceVals.length : 0;
-  
-  const extraBreakKeys = ['Extra Break', 'ExtraBreak', 'Over Break', 'OverBreak', 'Aux Over', 'Extra Break Hour', 'Extra Break (hr)'];
-  const lagTimeKeys = ['Lag Time', 'LagTime', 'Lag Hour', 'LagHours', 'Lag', 'Lag Time (hr)'];
+  const overBreakAgents = rows.filter(r=>{ const v=(r['Extra Break']||'').toString(); return v && !v.toLowerCase().startsWith('no'); }).length;
+  const lagAgents = rows.filter(r=>{ const v=(r['Lag Time']||'').toString(); return v && !v.toLowerCase().startsWith('no'); }).length;
+  const totalLagHours = rows.reduce((s,r)=>s+parseDurationHours(r['Lag Time']),0);
 
-  const overBreakAgents = rows.filter(r => parseDurationHours(getCleanVal(r, extraBreakKeys)) > 0).length;
-  const lagAgents = rows.filter(r => parseDurationHours(getCleanVal(r, lagTimeKeys)) > 0).length;
-  const totalLagHours = rows.reduce((s,r) => s + parseDurationHours(getCleanVal(r, lagTimeKeys)), 0);
-
-  kpiCard(box, 'Avg Adherence', pct(avgAdherence), avgAdherence>=0.9?'good':'warn', '◷');
-  kpiCard(box, 'Agents with Extra Break', overBreakAgents, overBreakAgents>0?'warn':'good', '⚠', `of ${rows.length} agents`);
-  kpiCard(box, 'Agents with Lag Time', lagAgents, lagAgents>0?'warn':'good', '⏱', `of ${rows.length} agents`);
-  kpiCard(box, 'Total Lag Time', totalLagHours.toFixed(1)+'h', totalLagHours>0?'bad':'good', '⏳');
+  kpiCard(box, 'Team Avg Adherence', pct(avgAdherence), avgAdherence>=0.9?'good':'warn', '◷');
+  kpiCard(box, 'Agents with Over Break', overBreakAgents, overBreakAgents>0?'warn':'good', '⚠', `of ${rows.length} agents`);
+  kpiCard(box, 'Agents with Lag', lagAgents, lagAgents>0?'warn':'good', '⏱', `of ${rows.length} agents`);
+  kpiCard(box, 'Total Lag Hours', totalLagHours.toFixed(1)+'h', 'bad', '⏳');
 
   const tbody = document.getElementById('adherenceTable'); tbody.innerHTML='';
   if(rows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No agent data found in ORT.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data returned for the "ORT" tab. Check that the tab name matches <code>SHEET_NAMES.ort</code> in AppsScript_Code.gs, and that its header row has columns like "Name", "Adherence%", "Extra Break", "Lag Time".</td>`));
     return;
   }
-  
-  [...rows].sort((a,b)=>(normPct(getCleanVal(a,['Adherence%','Adherence']))??1)-(normPct(getCleanVal(b,['Adherence%','Adherence']))??1)).forEach(r=>{
-    const adh = normPct(getCleanVal(r, ['Adherence%', 'Adherence', 'Adherence %', 'Sch Adherence']));
-    const rawExtraBreak = getCleanVal(r, extraBreakKeys);
-    const rawLagTime = getCleanVal(r, lagTimeKeys);
-    
-    const overBreakHrs = parseDurationHours(rawExtraBreak);
-    const lagHrs = parseDurationHours(rawLagTime);
-    
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID', 'VDI']);
-    
-    const extraBreakDisp = overBreakHrs > 0 ? fmtHoursMin(overBreakHrs) : (rawExtraBreak && rawExtraBreak!=='0' && rawExtraBreak!=='00:00:00' ? rawExtraBreak : '—');
-    const lagTimeDisp = lagHrs > 0 ? fmtHoursMin(lagHrs) : (rawLagTime && rawLagTime!=='0' && rawLagTime!=='00:00:00' ? rawLagTime : '—');
-
+  [...rows].sort((a,b)=>(normPct(a['Adherence%'])??1)-(normPct(b['Adherence%'])??1)).forEach(r=>{
+    const adh = normPct(r['Adherence%']);
+    const overBreak = parseDurationHours(r['Extra Break']);
+    const lag = parseDurationHours(r['Lag Time']);
     tbody.appendChild(el('tr',{}, `
-      <td>${name}</td>
+      <td>${r['Name']}</td>
       <td class="num ${adh!==null && adh<0.85?'cell-red':''}">${adh!==null?pct(adh):'—'}</td>
-      <td class="num ${overBreakHrs>0?'cell-red':''}">${extraBreakDisp}</td>
-      <td class="num ${lagHrs>0?'cell-red':''}">${lagTimeDisp}</td>
+      <td class="num">${overBreak>0?fmtHoursMin(overBreak):'—'}</td>
+      <td class="num">${lag>0?fmtHoursMin(lag):'—'}</td>
     `));
   });
 }
 
 // ============ AHT & CFS PAGE ============
 function renderAhtCfsPage(){
-  const rows = allOrt();
-  
+  const rows = DATA.ort;
   const box = document.getElementById('kpiAhtCfs'); box.innerHTML='';
-  const ahtVals = rows.map(r=>numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec', 'Average Handle Time']))).filter(v=>v>0);
+  const ahtVals = rows.map(r=>numOf(r['AHT'])).filter(v=>v>0);
   const avgAht = ahtVals.length ? ahtVals.reduce((a,b)=>a+b,0)/ahtVals.length : 0;
-  const cfsVals = rows.map(r=>normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %', 'Customer Satisfaction']))).filter(v=>v!==null);
+  const cfsVals = rows.map(r=>normPct(r['CFS%'])).filter(v=>v!==null);
   const avgCfs = cfsVals.length ? cfsVals.reduce((a,b)=>a+b,0)/cfsVals.length : 0;
-  const ahtMeeting = rows.filter(r=>{ const v=numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec'])); return v>0 && v<=AHT_TARGET; }).length;
-  const cfsMeeting = rows.filter(r=>{ const v=normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %'])); return v!==null && v>=CFS_TARGET; }).length;
+  const ahtMeeting = rows.filter(r=>{ const v=numOf(r['AHT']); return v>0 && v<=AHT_TARGET; }).length;
+  const cfsMeeting = rows.filter(r=>{ const v=normPct(r['CFS%']); return v!==null && v>=CFS_TARGET; }).length;
 
-  kpiCard(box, 'Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
+  kpiCard(box, 'Team Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
   kpiCard(box, 'AHT Target Met', `${ahtMeeting}/${rows.length}`, ahtMeeting===rows.length?'good':'warn', '✓');
-  kpiCard(box, 'Avg CFS', pct(avgCfs), avgCfs>=CFS_TARGET?'good':'bad', '☎', `target ${pct(CFS_TARGET)}`, avgCfs>=CFS_TARGET?'good':'bad');
+  kpiCard(box, 'Team Avg CFS', pct(avgCfs), avgCfs>=CFS_TARGET?'good':'bad', '☎', `target ${pct(CFS_TARGET)}`, avgCfs>=CFS_TARGET?'good':'bad');
   kpiCard(box, 'CFS Target Met', `${cfsMeeting}/${cfsVals.length}`, cfsMeeting===cfsVals.length?'good':'warn', '✓');
 
   const tbody = document.getElementById('ahtCfsTable'); tbody.innerHTML='';
   if(rows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No agent data found.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No data returned for the "ORT" tab. Check that the tab name matches <code>SHEET_NAMES.ort</code> in AppsScript_Code.gs, and that its header row has columns like "Name", "AHT", "CFS%".</td>`));
     return;
   }
   rows.forEach(r=>{
-    const aht = numOf(getCleanVal(r, ['AHT', 'AHT (sec)', 'AHT Sec']));
-    const cfs = normPct(getCleanVal(r, ['CFS%', 'CFS', 'CFS %']));
-    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID', 'VDI']);
+    const aht = numOf(r['AHT']);
+    const cfs = normPct(r['CFS%']);
     const ahtMet = aht>0 && aht<=AHT_TARGET;
     const ahtExcess = ahtMet ? 0 : aht-AHT_TARGET;
     const cfsMet = cfs!==null && cfs>=CFS_TARGET;
     tbody.appendChild(el('tr',{}, `
-      <td>${name}</td>
+      <td>${r['Name']}</td>
       <td class="num">${aht?aht.toFixed(1):'—'}</td>
       <td>${aht ? (ahtMet ? '<span class="pill good">Target Met</span>' : `<span class="pill bad">Reduce by ${ahtExcess.toFixed(1)}s</span>`) : '—'}</td>
       <td class="num">${cfs!==null?pct(cfs):'—'}</td>
@@ -970,79 +902,45 @@ function renderAhtCfsPage(){
 function renderAuditLog(){
   const search = (document.getElementById('logSearch').value||'').toLowerCase();
   const tbody = document.getElementById('auditLogTable'); tbody.innerHTML='';
-  const sorted = [...allAudits()].sort((a,b)=>{
-    const da=(getCleanVal(a,['Eval Date', 'Date'])||''), db=(getCleanVal(b,['Eval Date', 'Date'])||'');
+  const sorted = [...agentWiseAudits()].sort((a,b)=>{
+    const da=(a['Eval Date']||''), db=(b['Eval Date']||'');
     return db.localeCompare(da);
   });
   let shown=0;
   for(const r of sorted){
     if(shown>=200) break;
-    const agentName = getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'VDI ID']);
-    const qaName = getCleanVal(r, ['QA', 'Evaluator']);
-    const ani = getCleanVal(r, ['ANI', 'Caller ID', 'Phone', 'Customer Number', 'Contact Number', 'ANI/Phone']);
-    const topic = getCleanVal(r, ['Topic', 'Call Topic', 'Reason', 'Disposition', 'Call Reason', 'Category', 'Sub Topic']);
-    
-    const hay = `${agentName} ${qaName} ${ani} ${topic}`.toLowerCase();
+    const hay = `${r['Agent Name']} ${r['QA']}`.toLowerCase();
     if(search && !hay.includes(search)) continue;
-    const pass = isPass(getCleanVal(r, ['Pass or Fail', 'Result']));
+    const pass = isPass(r['Pass or Fail']);
     tbody.appendChild(el('tr',{}, `
-      <td>${getCleanVal(r, ['Eval Date', 'Date'])}</td>
-      <td>${agentName}</td>
-      <td>${qaName}</td>
-      <td class="num">${ani || '—'}</td>
-      <td>${topic || '—'}</td>
-      <td>${getCleanVal(r, ['Skill'])}</td>
-      <td><span class="pill ${pass?'pass':'fail'}">${getCleanVal(r, ['Pass or Fail', 'Result'])}</span></td>
-      <td>${getCleanVal(r, ['Critical Error', 'Critical'])}</td>
-      <td>${getCleanVal(r, ['RTC'])}</td>
+      <td>${r['Eval Date']||''}</td><td>${r['Agent Name']||''}</td><td>${r['QA']||''}</td><td>${r['Skill']||''}</td>
+      <td class="num">${r['Evaluation Score']||''}</td>
+      <td><span class="pill ${pass?'pass':'fail'}">${r['Pass or Fail']||''}</span></td>
+      <td>${r['Critical Error']||''}</td><td>${r['RTC']||''}</td>
     `));
     shown++;
   }
-  if(shown===0) tbody.appendChild(el('tr',{}, `<td colspan="9" class="empty-note">No matching audit records.</td>`));
+  if(shown===0) tbody.appendChild(el('tr',{}, `<td colspan="8" class="empty-note">No matching audits.</td>`));
 }
 
-// ============ CSV EXPORT ============
+// ============ CSV export (exports current page's primary table) ============
 function exportCSV(){
   let cols, rowsData, filename;
   if(CURRENT_PAGE==='agent'){
     cols=['Agent','Audits','Pass','Fail','Fail%','Empathy Pass','Empathy Fail','Empathy%'];
     rowsData = agentAggregates().map(a=>[a.agent,a.total,a.pass,a.fail,pct(a.failPct),a.ep,a.ef,a.empPct!==null?pct(a.empPct):'']);
     filename='agent_performance';
-  } else if(CURRENT_PAGE==='empathy'){
-    cols=['VDI ID', 'Agent Name', ...EMPATHY_PARAMS, 'Audits'];
-    rowsData = (getAlignedEmpathyData()).map(r=>[
-      r._vdiId || getCleanVal(r, ['VDI ID', 'VDI']),
-      r._agentName || getCleanVal(r, ['Name', 'Agent Name']),
-      ...EMPATHY_PARAMS.map(p => { const v = getEmpathyVal(r, p); return v !== null ? pct(v) : ''; }),
-      getCleanVal(r, ['Audit Count', 'Audits'])
-    ]);
-    filename='empathy_analysis_aligned';
   } else if(CURRENT_PAGE==='adherence'){
-    cols=['Agent Name','Adherence%','Extra Break','Lag Time'];
-    rowsData = allOrt().map(r=>[
-      getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID']), 
-      normPct(getCleanVal(r, ['Adherence%', 'Adherence']))!==null?pct(normPct(getCleanVal(r, ['Adherence%', 'Adherence']))):'', 
-      getCleanVal(r, ['Extra Break', 'ExtraBreak', 'Over Break']), 
-      getCleanVal(r, ['Lag Time', 'LagTime', 'Lag Hour'])
-    ]);
+    cols=['Agent','Adherence%','Over Break','Lag Hour'];
+    rowsData = agentWiseOrt().map(r=>[r['Name'], normPct(r['Adherence%'])!==null?pct(normPct(r['Adherence%'])):'', r['Extra Break'], r['Lag Time']]);
     filename='adherence_break';
   } else if(CURRENT_PAGE==='ahtcfs'){
     cols=['Agent','AHT','CFS%'];
-    rowsData = allOrt().map(r=>[getCleanVal(r, ['Name', 'Agent Name']), getCleanVal(r, ['AHT']), getCleanVal(r, ['CFS%', 'CFS'])]);
+    rowsData = agentWiseOrt().map(r=>[r['Name'], r['AHT'], r['CFS%']]);
     filename='aht_cfs';
   } else {
-    cols=['Eval Date','Agent Name','QA','ANI','Topic','Skill','Result','Critical','RTC'];
-    rowsData = allAudits().map(r=>[
-      getCleanVal(r, ['Eval Date']),
-      getCleanVal(r, ['Agent Name']),
-      getCleanVal(r, ['QA']),
-      getCleanVal(r, ['ANI', 'Caller ID', 'Phone']),
-      getCleanVal(r, ['Topic', 'Call Topic', 'Reason']),
-      getCleanVal(r, ['Skill']),
-      getCleanVal(r, ['Pass or Fail']),
-      getCleanVal(r, ['Critical Error']),
-      getCleanVal(r, ['RTC'])
-    ]);
+    cols=['Eval Date','Agent Name','QA','Skill','Score','Result','Critical','RTC'];
+    rowsData = agentWiseAudits().map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['Evaluation Score'],r['Pass or Fail'],r['Critical Error'],r['RTC']]);
     filename='audit_log';
   }
   const lines = [cols.join(',')].concat(rowsData.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')));
@@ -1052,7 +950,7 @@ function exportCSV(){
   URL.revokeObjectURL(url);
 }
 
-// ---------- BOOT ----------
+// ---------- boot ----------
 loadData();
 setInterval(()=>loadData(false), REFRESH_INTERVAL_MS);
 </script>
