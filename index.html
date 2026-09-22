@@ -844,7 +844,7 @@ function renderAhtCfsPage(){
   const avgAht = ahtVals.length ? ahtVals.reduce((a,b)=>a+b,0)/ahtVals.length : 0;
   const cfsVals = rows.map(r=>normPct(r['CFS%'])).filter(v=>v!==null);
   const avgCfs = cfsVals.length ? cfsVals.reduce((a,b)=>a+b,0)/cfsVals.length : 0;
-  const ahtMeeting = rows.filter(r=>numOf(r['AHT'])>=AHT_TARGET).length;
+  const ahtMeeting = rows.filter(r=>{ const v=numOf(r['AHT']); return v>0 && v<=AHT_TARGET; }).length;
   const cfsMeeting = rows.filter(r=>{ const v=normPct(r['CFS%']); return v!==null && v>=CFS_TARGET; }).length;
 
   kpiCard(box, 'Team Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
