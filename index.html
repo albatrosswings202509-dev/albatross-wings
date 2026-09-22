@@ -434,24 +434,50 @@ const CFS_TARGET = 0.90;
 
 let DATA = { agentAudits: [], empathyWise: [], ort: [], alignment: [] };
 
+// ---------- Fuzzy Key Normalizer ----------
+function getCleanVal(row, possibleKeys) {
+  if (!row) return '';
+  const rowKeys = Object.keys(row);
+  for (const pKey of possibleKeys) {
+    const target = pKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const actualKey = rowKeys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
+    if (actualKey && row[actualKey] !== undefined && row[actualKey] !== null) {
+      const val = String(row[actualKey]).trim();
+      if (val !== '') return val;
+    }
+  }
+  return '';
+}
+
 // ---------- alignment-based agent visibility ----------
 function alignmentAgentKeys(){
   const keys = new Set();
-  (DATA.alignment || []).forEach(r => {
-    const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? r['Agent ID'] ?? '').trim().toLowerCase();
-    const name = String(r['Name'] ?? r['Agent Name'] ?? r['Agent'] ?? '').trim().toLowerCase();
-    if(id) keys.add('id:' + id);
-    if(name) keys.add('name:' + name);
+  if(!DATA.alignment || !Array.isArray(DATA.alignment)) return keys;
+
+  DATA.alignment.forEach(r => {
+    const id = getCleanVal(r, ['VDI ID', 'VDI', 'EID', 'ID', 'Agent ID', 'Emp ID']);
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Employee Name']);
+    if(id) keys.add('id:' + id.toLowerCase());
+    if(name) keys.add('name:' + name.toLowerCase());
   });
   return keys;
 }
 
 function isAlignedRecord(r){
+  if (!DATA.alignment || !Array.isArray(DATA.alignment) || DATA.alignment.length === 0) {
+    return true; // If no alignment sheet at all, show everything
+  }
+
   const keys = alignmentAgentKeys();
-  if(keys.size === 0) return true; // Show all if alignment sheet is missing or empty
-  const id = String(r['VDI ID'] ?? r['EID'] ?? r['ID'] ?? r['Agent ID'] ?? '').trim().toLowerCase();
-  const name = String(r['Name'] ?? r['Agent Name'] ?? r['Agent'] ?? '').trim().toLowerCase();
-  return (id && keys.has('id:' + id)) || (name && keys.has('name:' + name));
+  if (keys.size === 0) return false; // Alignment sheet exists but has no valid entries -> strict filter out
+
+  const id = getCleanVal(r, ['VDI ID', 'VDI', 'EID', 'ID', 'Agent ID', 'Emp ID']);
+  const name = getCleanVal(r, ['Agent Name', 'Name', 'Agent', 'Employee Name']);
+
+  const hasId = id && keys.has('id:' + id.toLowerCase());
+  const hasName = name && keys.has('name:' + name.toLowerCase());
+
+  return Boolean(hasId || hasName);
 }
 
 function agentWiseRows(rows){ return (rows || []).filter(isAlignedRecord); }
@@ -582,7 +608,7 @@ function kpiCard(container, label, value, iconClass, icon, sub='', subClass=''){
 
 // ============ OVERVIEW ============
 function agentAggregates(){
-  const byAgent = groupBy(agentWiseAudits(), r=>r['Agent Name']||'Unknown');
+  const byAgent = groupBy(agentWiseAudits(), r => getCleanVal(r, ['Agent Name', 'Name', 'Agent']) || 'Unknown');
   const out = [];
   byAgent.forEach((rows, agent) => {
     if(!agent || agent==='Unknown') return;
@@ -600,7 +626,7 @@ function agentAggregates(){
 
 function renderOverview(){
   const box = document.getElementById('kpiOverview'); box.innerHTML='';
-  const rows = DATA.agentAudits; // Keep full team data for team KPI overview
+  const rows = agentWiseAudits(); // Strictly use aligned agent audits only
   const total = rows.length;
   const passCount = rows.filter(r=>isPass(r['Pass or Fail'])).length;
   const failCount = total - passCount;
@@ -609,7 +635,7 @@ function renderOverview(){
   const efSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
   const empPct = (epSum+efSum)>0 ? epSum/(epSum+efSum) : 0;
 
-  kpiCard(box, 'Total Audits (Team)', total.toLocaleString(), 'blue', '▤');
+  kpiCard(box, 'Total Audits (Aligned)', total.toLocaleString(), 'blue', '▤');
   kpiCard(box, 'Pass Rate', total? pct(passCount/total) : '—', 'good', '✓', `${passCount} passed`, 'good');
   kpiCard(box, 'Fail Rate', total? pct(failCount/total) : '—', 'bad', '✕', `${failCount} failed`, failCount>0?'bad':'');
   kpiCard(box, 'Empathy Pass %', pct(empPct), empPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', empPct>=EMPATHY_AGENT_TARGET?'Meets 88% target':'Below 88% target', empPct>=EMPATHY_AGENT_TARGET?'good':'bad');
@@ -701,7 +727,7 @@ function renderOverview(){
 function populateAgentSelect(){
   const sel = document.getElementById('agentSelect');
   const current = sel.value;
-  const names = [...new Set(agentWiseAudits().map(r=>r['Agent Name']).filter(Boolean))].sort();
+  const names = [...new Set(agentWiseAudits().map(r => getCleanVal(r, ['Agent Name', 'Name', 'Agent'])).filter(Boolean))].sort();
   sel.innerHTML = '<option value="">All Aligned Agents</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
   if(names.includes(current)) sel.value = current;
 }
@@ -769,8 +795,8 @@ function renderEmpathyPage(){
   EMPATHY_PARAMS.forEach(param => {
     let wsum=0, csum=0;
     rows.forEach(r=>{
-      const audit = numOf(r['Audit Count']);
-      const val = normPct(r[param]);
+      const audit = numOf(getCleanVal(r, ['Audit Count', 'Audits']));
+      const val = normPct(getCleanVal(r, [param]));
       if(audit>0 && val!==null){ wsum += val*audit; csum += audit; }
     });
     const avg = csum>0 ? wsum/csum : null;
@@ -782,40 +808,38 @@ function renderEmpathyPage(){
     `));
   });
 
-  const nameMap = new Map((DATA.alignment||[]).map(a=>[a['VDI ID'] || a['ID'], a['Name'] || a['Agent Name']]));
   const head = document.getElementById('empathyMatrixHead');
   head.innerHTML = '<th>Agent</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
   if(rows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No aligned agent data.</td>`)); return; }
   rows.forEach(r=>{
-    const name = nameMap.get(r['VDI ID']) || r['Name'] || r['Agent Name'] || r['VDI ID'];
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'VDI ID']);
     let cells = `<td>${name}</td>`;
     EMPATHY_PARAMS.forEach(p=>{
-      const val = normPct(r[p]);
+      const val = normPct(getCleanVal(r, [p]));
       if(val===null){ cells += `<td class="num">—</td>`; }
       else { cells += `<td class="num ${val<EMPATHY_PARAM_TARGET?'cell-red':''}">${pct(val)}</td>`; }
     });
-    cells += `<td class="num">${r['Audit Count']||0}</td>`;
+    cells += `<td class="num">${getCleanVal(r, ['Audit Count', 'Audits'])||0}</td>`;
     body.appendChild(el('tr',{}, cells));
   });
 }
 
 // ============ ADHERENCE & BREAK PAGE ============
 function renderAdherencePage(){
-  const allRows = DATA.ort; // Full team for KPI cards
-  const rows = agentWiseOrt(); // Aligned agents only for table
+  const rows = agentWiseOrt(); // Aligned agents only
   
   const box = document.getElementById('kpiAdherence'); box.innerHTML='';
-  const adherenceVals = allRows.map(r=>normPct(r['Adherence%'])).filter(v=>v!==null);
+  const adherenceVals = rows.map(r => normPct(getCleanVal(r, ['Adherence%', 'Adherence']))).filter(v=>v!==null);
   const avgAdherence = adherenceVals.length ? adherenceVals.reduce((a,b)=>a+b,0)/adherenceVals.length : 0;
-  const overBreakAgents = allRows.filter(r=>{ const v=(r['Extra Break']||'').toString(); return v && !v.toLowerCase().startsWith('no'); }).length;
-  const lagAgents = allRows.filter(r=>{ const v=(r['Lag Time']||'').toString(); return v && !v.toLowerCase().startsWith('no'); }).length;
-  const totalLagHours = allRows.reduce((s,r)=>s+parseDurationHours(r['Lag Time']),0);
+  const overBreakAgents = rows.filter(r=>{ const v=getCleanVal(r, ['Extra Break', 'Over Break']); return v && !v.toLowerCase().startsWith('no'); }).length;
+  const lagAgents = rows.filter(r=>{ const v=getCleanVal(r, ['Lag Time', 'Lag Hour']); return v && !v.toLowerCase().startsWith('no'); }).length;
+  const totalLagHours = rows.reduce((s,r)=>s+parseDurationHours(getCleanVal(r, ['Lag Time', 'Lag Hour'])),0);
 
-  kpiCard(box, 'Team Avg Adherence', pct(avgAdherence), avgAdherence>=0.9?'good':'warn', '◷');
-  kpiCard(box, 'Agents with Over Break', overBreakAgents, overBreakAgents>0?'warn':'good', '⚠', `of ${allRows.length} total team`);
-  kpiCard(box, 'Agents with Lag', lagAgents, lagAgents>0?'warn':'good', '⏱', `of ${allRows.length} total team`);
+  kpiCard(box, 'Aligned Avg Adherence', pct(avgAdherence), avgAdherence>=0.9?'good':'warn', '◷');
+  kpiCard(box, 'Agents with Over Break', overBreakAgents, overBreakAgents>0?'warn':'good', '⚠', `of ${rows.length} aligned agents`);
+  kpiCard(box, 'Agents with Lag', lagAgents, lagAgents>0?'warn':'good', '⏱', `of ${rows.length} aligned agents`);
   kpiCard(box, 'Total Lag Hours', totalLagHours.toFixed(1)+'h', 'bad', '⏳');
 
   const tbody = document.getElementById('adherenceTable'); tbody.innerHTML='';
@@ -823,12 +847,13 @@ function renderAdherencePage(){
     tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No aligned agent data found.</td>`));
     return;
   }
-  [...rows].sort((a,b)=>(normPct(a['Adherence%'])??1)-(normPct(b['Adherence%'])??1)).forEach(r=>{
-    const adh = normPct(r['Adherence%']);
-    const overBreak = parseDurationHours(r['Extra Break']);
-    const lag = parseDurationHours(r['Lag Time']);
+  [...rows].sort((a,b)=>(normPct(getCleanVal(a,['Adherence%','Adherence']))??1)-(normPct(getCleanVal(b,['Adherence%','Adherence']))??1)).forEach(r=>{
+    const adh = normPct(getCleanVal(r, ['Adherence%', 'Adherence']));
+    const overBreak = parseDurationHours(getCleanVal(r, ['Extra Break', 'Over Break']));
+    const lag = parseDurationHours(getCleanVal(r, ['Lag Time', 'Lag Hour']));
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent']);
     tbody.appendChild(el('tr',{}, `
-      <td>${r['Name'] || r['Agent Name'] || ''}</td>
+      <td>${name}</td>
       <td class="num ${adh!==null && adh<0.85?'cell-red':''}">${adh!==null?pct(adh):'—'}</td>
       <td class="num">${overBreak>0?fmtHoursMin(overBreak):'—'}</td>
       <td class="num">${lag>0?fmtHoursMin(lag):'—'}</td>
@@ -838,20 +863,19 @@ function renderAdherencePage(){
 
 // ============ AHT & CFS PAGE ============
 function renderAhtCfsPage(){
-  const allRows = DATA.ort; // Full team for KPI cards
-  const rows = agentWiseOrt(); // Aligned agents only for table
+  const rows = agentWiseOrt(); // Aligned agents only
   
   const box = document.getElementById('kpiAhtCfs'); box.innerHTML='';
-  const ahtVals = allRows.map(r=>numOf(r['AHT'])).filter(v=>v>0);
+  const ahtVals = rows.map(r=>numOf(getCleanVal(r, ['AHT']))).filter(v=>v>0);
   const avgAht = ahtVals.length ? ahtVals.reduce((a,b)=>a+b,0)/ahtVals.length : 0;
-  const cfsVals = allRows.map(r=>normPct(r['CFS%'])).filter(v=>v!==null);
+  const cfsVals = rows.map(r=>normPct(getCleanVal(r, ['CFS%', 'CFS']))).filter(v=>v!==null);
   const avgCfs = cfsVals.length ? cfsVals.reduce((a,b)=>a+b,0)/cfsVals.length : 0;
-  const ahtMeeting = allRows.filter(r=>{ const v=numOf(r['AHT']); return v>0 && v<=AHT_TARGET; }).length;
-  const cfsMeeting = allRows.filter(r=>{ const v=normPct(r['CFS%']); return v!==null && v>=CFS_TARGET; }).length;
+  const ahtMeeting = rows.filter(r=>{ const v=numOf(getCleanVal(r, ['AHT'])); return v>0 && v<=AHT_TARGET; }).length;
+  const cfsMeeting = rows.filter(r=>{ const v=normPct(getCleanVal(r, ['CFS%', 'CFS'])); return v!==null && v>=CFS_TARGET; }).length;
 
-  kpiCard(box, 'Team Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
-  kpiCard(box, 'AHT Target Met', `${ahtMeeting}/${allRows.length}`, ahtMeeting===allRows.length?'good':'warn', '✓');
-  kpiCard(box, 'Team Avg CFS', pct(avgCfs), avgCfs>=CFS_TARGET?'good':'bad', '☎', `target ${pct(CFS_TARGET)}`, avgCfs>=CFS_TARGET?'good':'bad');
+  kpiCard(box, 'Aligned Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
+  kpiCard(box, 'AHT Target Met', `${ahtMeeting}/${rows.length}`, ahtMeeting===rows.length?'good':'warn', '✓');
+  kpiCard(box, 'Aligned Avg CFS', pct(avgCfs), avgCfs>=CFS_TARGET?'good':'bad', '☎', `target ${pct(CFS_TARGET)}`, avgCfs>=CFS_TARGET?'good':'bad');
   kpiCard(box, 'CFS Target Met', `${cfsMeeting}/${cfsVals.length}`, cfsMeeting===cfsVals.length?'good':'warn', '✓');
 
   const tbody = document.getElementById('ahtCfsTable'); tbody.innerHTML='';
@@ -860,13 +884,14 @@ function renderAhtCfsPage(){
     return;
   }
   rows.forEach(r=>{
-    const aht = numOf(r['AHT']);
-    const cfs = normPct(r['CFS%']);
+    const aht = numOf(getCleanVal(r, ['AHT']));
+    const cfs = normPct(getCleanVal(r, ['CFS%', 'CFS']));
+    const name = getCleanVal(r, ['Name', 'Agent Name', 'Agent']);
     const ahtMet = aht>0 && aht<=AHT_TARGET;
     const ahtExcess = ahtMet ? 0 : aht-AHT_TARGET;
     const cfsMet = cfs!==null && cfs>=CFS_TARGET;
     tbody.appendChild(el('tr',{}, `
-      <td>${r['Name'] || r['Agent Name'] || ''}</td>
+      <td>${name}</td>
       <td class="num">${aht?aht.toFixed(1):'—'}</td>
       <td>${aht ? (ahtMet ? '<span class="pill good">Target Met</span>' : `<span class="pill bad">Reduce by ${ahtExcess.toFixed(1)}s</span>`) : '—'}</td>
       <td class="num">${cfs!==null?pct(cfs):'—'}</td>
@@ -880,20 +905,22 @@ function renderAuditLog(){
   const search = (document.getElementById('logSearch').value||'').toLowerCase();
   const tbody = document.getElementById('auditLogTable'); tbody.innerHTML='';
   const sorted = [...agentWiseAudits()].sort((a,b)=>{
-    const da=(a['Eval Date']||''), db=(b['Eval Date']||'');
+    const da=(getCleanVal(a,['Eval Date', 'Date'])||''), db=(getCleanVal(b,['Eval Date', 'Date'])||'');
     return db.localeCompare(da);
   });
   let shown=0;
   for(const r of sorted){
     if(shown>=200) break;
-    const hay = `${r['Agent Name']} ${r['QA']}`.toLowerCase();
+    const agentName = getCleanVal(r, ['Agent Name', 'Name', 'Agent']);
+    const qaName = getCleanVal(r, ['QA', 'Evaluator']);
+    const hay = `${agentName} ${qaName}`.toLowerCase();
     if(search && !hay.includes(search)) continue;
-    const pass = isPass(r['Pass or Fail']);
+    const pass = isPass(getCleanVal(r, ['Pass or Fail', 'Result']));
     tbody.appendChild(el('tr',{}, `
-      <td>${r['Eval Date']||''}</td><td>${r['Agent Name']||''}</td><td>${r['QA']||''}</td><td>${r['Skill']||''}</td>
-      <td class="num">${r['Evaluation Score']||''}</td>
-      <td><span class="pill ${pass?'pass':'fail'}">${r['Pass or Fail']||''}</span></td>
-      <td>${r['Critical Error']||''}</td><td>${r['RTC']||''}</td>
+      <td>${getCleanVal(r, ['Eval Date', 'Date'])}</td><td>${agentName}</td><td>${qaName}</td><td>${getCleanVal(r, ['Skill'])}</td>
+      <td class="num">${getCleanVal(r, ['Evaluation Score', 'Score'])}</td>
+      <td><span class="pill ${pass?'pass':'fail'}">${getCleanVal(r, ['Pass or Fail', 'Result'])}</span></td>
+      <td>${getCleanVal(r, ['Critical Error', 'Critical'])}</td><td>${getCleanVal(r, ['RTC'])}</td>
     `));
     shown++;
   }
@@ -909,15 +936,15 @@ function exportCSV(){
     filename='agent_performance';
   } else if(CURRENT_PAGE==='adherence'){
     cols=['Agent','Adherence%','Over Break','Lag Hour'];
-    rowsData = agentWiseOrt().map(r=>[r['Name']||r['Agent Name'], normPct(r['Adherence%'])!==null?pct(normPct(r['Adherence%'])):'', r['Extra Break'], r['Lag Time']]);
+    rowsData = agentWiseOrt().map(r=>[getCleanVal(r, ['Name', 'Agent Name']), normPct(getCleanVal(r, ['Adherence%', 'Adherence']))!==null?pct(normPct(getCleanVal(r, ['Adherence%', 'Adherence']))):'', getCleanVal(r, ['Extra Break']), getCleanVal(r, ['Lag Time'])]);
     filename='adherence_break';
   } else if(CURRENT_PAGE==='ahtcfs'){
     cols=['Agent','AHT','CFS%'];
-    rowsData = agentWiseOrt().map(r=>[r['Name']||r['Agent Name'], r['AHT'], r['CFS%']]);
+    rowsData = agentWiseOrt().map(r=>[getCleanVal(r, ['Name', 'Agent Name']), getCleanVal(r, ['AHT']), getCleanVal(r, ['CFS%', 'CFS'])]);
     filename='aht_cfs';
   } else {
     cols=['Eval Date','Agent Name','QA','Skill','Score','Result','Critical','RTC'];
-    rowsData = agentWiseAudits().map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['Evaluation Score'],r['Pass or Fail'],r['Critical Error'],r['RTC']]);
+    rowsData = agentWiseAudits().map(r=>[getCleanVal(r, ['Eval Date']),getCleanVal(r, ['Agent Name']),getCleanVal(r, ['QA']),getCleanVal(r, ['Skill']),getCleanVal(r, ['Evaluation Score']),getCleanVal(r, ['Pass or Fail']),getCleanVal(r, ['Critical Error']),getCleanVal(r, ['RTC'])]);
     filename='audit_log';
   }
   const lines = [cols.join(',')].concat(rowsData.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')));
