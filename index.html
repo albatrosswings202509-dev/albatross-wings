@@ -491,7 +491,15 @@ async function loadData(manual=false){
     DATA = json;
     chip.classList.remove('stale');
     const t = new Date(json.generatedAt || Date.now());
-    statusText.textContent = `Live · updated ${t.toLocaleTimeString()}`;
+    const missing = [];
+    if(!json.empathyWise || json.empathyWise.length===0) missing.push('Empathy wise');
+    if(!json.ort || json.ort.length===0) missing.push('ORT');
+    if(missing.length>0 && json.debug && json.debug.availableSheetNames){
+      statusText.textContent = `Live, but ${missing.join(' & ')} returned 0 rows. Tabs found in sheet: ${json.debug.availableSheetNames.join(', ')}`;
+      chip.classList.add('stale');
+    } else {
+      statusText.textContent = `Live · updated ${t.toLocaleTimeString()}`;
+    }
     renderCurrentPage();
   }catch(err){
     chip.classList.add('stale');
@@ -754,7 +762,10 @@ const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speec
 function renderEmpathyPage(){
   const rows = DATA.empathyWise;
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
-  if(rows.length===0){ cardBox.appendChild(el('div',{class:'empty-note'},'No empathy data.')); }
+  if(rows.length===0){
+    cardBox.appendChild(el('div',{class:'empty-note', style:'grid-column:1/-1;'},
+      `No data returned for the "Empathy wise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
+  }
 
   EMPATHY_PARAMS.forEach(param => {
     let wsum=0, csum=0;
@@ -808,7 +819,10 @@ function renderAdherencePage(){
   kpiCard(box, 'Total Lag Hours', totalLagHours.toFixed(1)+'h', 'bad', '⏳');
 
   const tbody = document.getElementById('adherenceTable'); tbody.innerHTML='';
-  if(rows.length===0){ tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data.</td>`)); return; }
+  if(rows.length===0){
+    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data returned for the "ORT" tab. Check that the tab name matches <code>SHEET_NAMES.ort</code> in AppsScript_Code.gs, and that its header row has columns like "Name", "Adherence%", "Extra Break", "Lag Time".</td>`));
+    return;
+  }
   [...rows].sort((a,b)=>(normPct(a['Adherence%'])??1)-(normPct(b['Adherence%'])??1)).forEach(r=>{
     const adh = normPct(r['Adherence%']);
     const overBreak = parseDurationHours(r['Extra Break']);
@@ -839,7 +853,10 @@ function renderAhtCfsPage(){
   kpiCard(box, 'CFS Target Met', `${cfsMeeting}/${cfsVals.length}`, cfsMeeting===cfsVals.length?'good':'warn', '✓');
 
   const tbody = document.getElementById('ahtCfsTable'); tbody.innerHTML='';
-  if(rows.length===0){ tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No data.</td>`)); return; }
+  if(rows.length===0){
+    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No data returned for the "ORT" tab. Check that the tab name matches <code>SHEET_NAMES.ort</code> in AppsScript_Code.gs, and that its header row has columns like "Name", "AHT", "CFS%".</td>`));
+    return;
+  }
   rows.forEach(r=>{
     const aht = numOf(r['AHT']);
     const cfs = normPct(r['CFS%']);
