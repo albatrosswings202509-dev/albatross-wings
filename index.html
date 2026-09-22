@@ -459,20 +459,29 @@ function getAlignedEmpathyData() {
   const result = [];
 
   empRows.forEach(r => {
-    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI', 'VDIID']);
+    // Extract VDI ID from Empathy sheet
+    const vdi = getCleanVal(r, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID', 'ID', 'Agent VDI', 'VDIID', 'VDI_No']);
     const cleanVdi = vdi.toLowerCase().trim();
+    
+    // Extract Name directly from Empathy sheet as baseline fallback
+    const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
+    
+    // Try lookup in Alignment sheet
+    let finalName = nameFromEmp;
+    if (cleanVdi && alignMap.has(cleanVdi)) {
+      finalName = alignMap.get(cleanVdi) || nameFromEmp;
+    }
 
-    if (alignMap.size > 0) {
-      // Look up in Alignment sheet
-      if (cleanVdi && alignMap.has(cleanVdi)) {
-        const nameFromAlign = alignMap.get(cleanVdi);
-        const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
-        result.push({
-          ...r,
-          _vdiId: vdi,
-          _agentName: nameFromAlign || nameFromEmp || 'Unknown'
-        });
-      }
+    // Always push the record so no data gets hidden
+    result.push({
+      ...r,
+      _vdiId: vdi || 'N/A',
+      _agentName: finalName || 'Unknown Agent'
+    });
+  });
+
+  return result;
+}
     } else {
       // Fallback if Alignment is empty/not passed yet
       const nameFromEmp = getCleanVal(r, ['Name', 'Agent Name', 'Agent', 'Emp Name', 'Employee Name']);
