@@ -293,7 +293,7 @@
   </div>
 
   <div class="setup-banner" id="setupBanner">
-    One more step: open this file in a text editor and replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code>
+    One more step: open this file in a text editor and replace <code>https://script.google.com/macros/s/AKfycbwmNnXNHbimaqWMd505WRSGx6XYaiY9QnzWwkEwo9LbpUEiEVEuvQ4wNlPDetbBS1g/exec</code>
     with your Apps Script Web app URL. Until then this shows sample data.
   </div>
 
@@ -427,7 +427,7 @@
 </div>
 
 <script>
-const API_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbwmNnXNHbimaqWMd505WRSGx6XYaiY9QnzWwkEwo9LbpUEiEVEuvQ4wNlPDetbBS1g/exec";
 const REFRESH_INTERVAL_MS = 30000;
 const EMPATHY_AGENT_TARGET = 0.88;   // Agent Performance page target
 const EMPATHY_PARAM_TARGET = 0.875;  // Empathy Analysis page red-flag threshold
@@ -475,7 +475,7 @@ async function loadData(manual=false){
   const statusText = document.getElementById('statusText');
   if(manual){ btn.disabled=true; btn.textContent='Refreshing…'; }
 
-  if(!API_URL || API_URL.indexOf('PASTE_YOUR')===0){
+  if(!API_URL || API_URL.indexOf('https://script.google.com/macros/s/AKfycbwmNnXNHbimaqWMd505WRSGx6XYaiY9QnzWwkEwo9LbpUEiEVEuvQ4wNlPDetbBS1g/exec')===0){
     document.getElementById('setupBanner').classList.add('show');
     DATA = await loadSampleData();
     chip.classList.add('stale');
