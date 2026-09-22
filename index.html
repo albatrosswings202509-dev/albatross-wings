@@ -860,13 +860,13 @@ function renderAhtCfsPage(){
   rows.forEach(r=>{
     const aht = numOf(r['AHT']);
     const cfs = normPct(r['CFS%']);
-    const ahtMet = aht>=AHT_TARGET;
-    const ahtShort = ahtMet ? 0 : AHT_TARGET-aht;
+    const ahtMet = aht>0 && aht<=AHT_TARGET;
+    const ahtExcess = ahtMet ? 0 : aht-AHT_TARGET;
     const cfsMet = cfs!==null && cfs>=CFS_TARGET;
     tbody.appendChild(el('tr',{}, `
       <td>${r['Name']}</td>
       <td class="num">${aht?aht.toFixed(1):'—'}</td>
-      <td>${aht ? (ahtMet ? '<span class="pill good">Target Met</span>' : `<span class="pill bad">-${ahtShort.toFixed(1)}s</span>`) : '—'}</td>
+      <td>${aht ? (ahtMet ? '<span class="pill good">Target Met</span>' : `<span class="pill bad">Reduce by ${ahtExcess.toFixed(1)}s</span>`) : '—'}</td>
       <td class="num">${cfs!==null?pct(cfs):'—'}</td>
       <td>${cfs!==null ? (cfsMet ? '<span class="pill good">Target Met</span>' : `<span class="pill bad">-${pct(CFS_TARGET-cfs)}</span>`) : 'NA'}</td>
     `));
