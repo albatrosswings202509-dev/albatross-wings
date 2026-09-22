@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Performance Dashboard</title>
+<title>Albatross Wings — Team Performance Dashboard</title>
 <style>
   :root{
     --navy:#101d34;
@@ -263,8 +263,8 @@
 <div class="sidebar" id="sidebar">
   <div class="sidebar-inner">
     <div class="sidebar-brand">
-      <div class="logo">TW</div>
-      <div class="name">Team Dashboard</div>
+      <div class="logo">AW</div>
+      <div class="name">Albatross Wings</div>
       <button id="sidebarToggle" onclick="toggleSidebar()" title="Collapse sidebar">☰</button>
     </div>
     <div class="sidebar-nav">
@@ -293,7 +293,7 @@
   </div>
 
   <div class="setup-banner" id="setupBanner">
-    One more step: open this file in a text editor and replace <code>https://script.google.com/macros/s/AKfycby89IW0Yw5T7nBAMWge3OaSn6A5es9Bkve13jbLsQCG9IlEbJtQHFHsXh6beKwTFM2Y/exec</code>
+    One more step: open this file in a text editor and replace <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code>
     with your Apps Script Web app URL. Until then this shows sample data.
   </div>
 
@@ -475,7 +475,7 @@ async function loadData(manual=false){
   const statusText = document.getElementById('statusText');
   if(manual){ btn.disabled=true; btn.textContent='Refreshing…'; }
 
-  if(!API_URL || API_URL.indexOf('https://script.google.com/macros/s/AKfycby89IW0Yw5T7nBAMWge3OaSn6A5es9Bkve13jbLsQCG9IlEbJtQHFHsXh6beKwTFM2Y/exec')===0){
+  if(!API_URL || API_URL.indexOf('PASTE_YOUR')===0){
     document.getElementById('setupBanner').classList.add('show');
     DATA = await loadSampleData();
     chip.classList.add('stale');
