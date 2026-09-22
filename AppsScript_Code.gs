@@ -34,6 +34,9 @@ function doGet(e) {
 
   var payload = {
     generatedAt: new Date().toISOString(),
+    debug: {
+      availableSheetNames: ss.getSheets().map(function(s){ return s.getName(); })
+    },
     agentAudits: readAgentWise(ss),
     empathyWise: readEmpathyWise(ss),
     ort: readOrt(ss),
@@ -45,14 +48,31 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// Finds a sheet by name, tolerant of extra/missing whitespace and case.
+// Falls back to exact getSheetByName first (fast path), then does a
+// trimmed/case-insensitive scan so small naming drift doesn't silently
+// return zero rows.
+function findSheetLoose(ss, name) {
+  var exact = ss.getSheetByName(name);
+  if (exact) return exact;
+  var target = name.toString().trim().toLowerCase();
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getName().toString().trim().toLowerCase() === target) {
+      return sheets[i];
+    }
+  }
+  return null;
+}
+
 function sheetToObjects(sheet, wantedHeaders) {
   if (!sheet) return [];
   var values = sheet.getDataRange().getDisplayValues();
   if (values.length < 2) return [];
-  var headers = values[0];
+  var headers = values[0].map(function(h){ return (h || '').toString().trim(); });
   var colIndex = {};
   wantedHeaders.forEach(function(name) {
-    var idx = headers.indexOf(name);
+    var idx = headers.indexOf(name.trim());
     if (idx !== -1) colIndex[name] = idx;
   });
 
@@ -74,7 +94,7 @@ function sheetToObjects(sheet, wantedHeaders) {
 }
 
 function readAgentWise(ss) {
-  var sheet = ss.getSheetByName(SHEET_NAMES.agentWise);
+  var sheet = findSheetLoose(ss, SHEET_NAMES.agentWise);
   var wanted = [
     'Eval Date', 'Agent Name', 'Team Leader', 'QA', 'VDI ID', 'Site', 'Skill', 'Month', 'Tenure',
     'Pass or Fail', 'Critical Error', 'RTC', 'Audit Party',
@@ -86,7 +106,7 @@ function readAgentWise(ss) {
 }
 
 function readEmpathyWise(ss) {
-  var sheet = ss.getSheetByName(SHEET_NAMES.empathyWise);
+  var sheet = findSheetLoose(ss, SHEET_NAMES.empathyWise);
   var wanted = [
     'VDI ID', 'Skill', 'TL', 'Audit Count',
     'Warm Greetings', 'Acknowledgment & Understanding',
@@ -99,7 +119,7 @@ function readEmpathyWise(ss) {
 }
 
 function readOrt(ss) {
-  var sheet = ss.getSheetByName(SHEET_NAMES.ort);
+  var sheet = findSheetLoose(ss, SHEET_NAMES.ort);
   var wanted = ['ID', 'Name', 'AHT', 'Lag Time', 'Extra Break', 'Adherence%', 'CFS%'];
   var rows = sheetToObjects(sheet, wanted);
   // exclude "Grand Total" row and blanks
@@ -107,7 +127,7 @@ function readOrt(ss) {
 }
 
 function readAlignment(ss) {
-  var sheet = ss.getSheetByName(SHEET_NAMES.alignment);
+  var sheet = findSheetLoose(ss, SHEET_NAMES.alignment);
   var wanted = ['GNX ID', 'Name', 'Gender', 'Supervisor 1', 'VDI ID'];
   var rows = sheetToObjects(sheet, wanted);
   return rows.filter(function(r) { return r['Name'] && r['Name'] !== ''; });
