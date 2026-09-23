@@ -502,7 +502,7 @@ async function loadData(manual=false){
     chip.classList.remove('stale');
     const t = new Date(json.generatedAt || Date.now());
     const missing = [];
-    if(!json.empathyWise || json.empathyWise.length===0) missing.push('Empathy wise');
+    if(!json.empathyWise || json.empathyWise.length===0) missing.push('Empathywise');
     if(!json.ort || json.ort.length===0) missing.push('ORT');
     if(missing.length>0 && json.debug && json.debug.availableSheetNames){
       statusText.textContent = `Live, but ${missing.join(' & ')} returned 0 rows. Tabs found in sheet: ${json.debug.availableSheetNames.join(', ')}`;
@@ -542,7 +542,7 @@ function toggleSidebar(){
 const PAGE_META = {
   overview:   {title:'Dashboard Overview', sub:'Team performance summary'},
   agent:      {title:'Agent Performance', sub:'From IB Agent Wise — audits, pass/fail, empathy vs 88% target'},
-  empathy:    {title:'Empathy Analysis', sub:'From Empathy Wise — parameter pass % vs 87.5% target'},
+  empathy:    {title:'Empathy Analysis', sub:'From EmpathyWise — parameter pass % vs 87.5% target'},
   adherence:  {title:'Adherence & Break', sub:'From ORT — adherence, over break, lag hour'},
   ahtcfs:     {title:'AHT & CFS', sub:'From ORT — AHT target 170s, CFS target 90%'},
   log:        {title:'Audit Log', sub:'Raw call-level audit records'}
@@ -778,7 +778,7 @@ function renderEmpathyPage(){
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
   if(rows.length===0){
     cardBox.appendChild(el('div',{class:'empty-note', style:'grid-column:1/-1;'},
-      `No data returned for the "Empathy wise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
+      `No data returned for the "Empathywise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
   }
 
   EMPATHY_PARAMS.forEach(param => {
@@ -805,7 +805,7 @@ function renderEmpathyPage(){
   head.innerHTML = '<th>Agent</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
-  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No roster agents matched. Check that VDI IDs in the "allignment" tab match "Empathy wise".</td>`)); return; }
+  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No roster agents matched. Check that VDI IDs in the "allignment" tab match "Empathywise".</td>`)); return; }
   rosterRows.forEach(r=>{
     const name = nameMap.get(r['VDI ID']) || r['VDI ID'];
     let cells = `<td>${name}</td>`;
