@@ -91,7 +91,6 @@
     white-space:nowrap;
   }
 
-  /* Floating reopen button, shown only while sidebar is collapsed */
   .sidebar-reopen{
     position:fixed; top:16px; left:16px; z-index:60;
     width:34px; height:34px; border-radius:8px;
@@ -102,7 +101,6 @@
   body.sidebar-collapsed .sidebar-reopen{display:flex;}
   .sidebar-reopen:hover{background:#1c2c4c;}
 
-  /* Toggle button inside the sidebar */
   #sidebarToggle{
     background:none; border:1px solid var(--navy-line); color:#aab2c5;
     width:26px; height:26px; border-radius:6px; cursor:pointer;
@@ -160,7 +158,6 @@
   .section-head h2{font-size:15.5px; font-weight:700; margin:0;}
   .section-head .hint{font-size:11.5px; color:var(--muted-dim); font-family:var(--mono);}
 
-  /* Filters */
   .filterbar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px;}
   .filterbar .fgroup{display:flex; flex-direction:column; gap:5px;}
   .filterbar label{font-size:10.5px; color:var(--muted-dim);}
@@ -170,7 +167,6 @@
   }
   .filterbar select:focus, .filterbar input:focus{outline:1px solid var(--blue);}
 
-  /* KPI cards */
   .kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px;}
   .kpi-card{
     background:var(--card); border:1px solid var(--line); border-radius:12px;
@@ -192,14 +188,12 @@
   .kpi-card .kpi-sub.good{color:var(--good);}
   .kpi-card .kpi-sub.bad{color:var(--bad);}
 
-  /* Panels */
   .panel{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px;}
   .panel-title{font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:14px;}
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
   .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
   @media (max-width:960px){.grid-2, .grid-3{grid-template-columns:1fr;}}
 
-  /* Bars */
   .bar-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
   .bar-label{width:150px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink);}
   .bar-track{flex:1; background:#eef1f7; height:14px; border-radius:4px; overflow:hidden;}
@@ -210,7 +204,6 @@
   .bar-fill.warn{background:var(--warn);}
   .bar-val{width:90px; text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
 
-  /* Empathy parameter cards */
   .param-card{
     border-radius:12px; padding:14px 16px; border:1px solid var(--line);
     background:var(--good-dim);
@@ -222,7 +215,6 @@
   .param-card:not(.red) .pval{color:var(--good);}
   .param-card .ptarget{font-size:10.5px; color:var(--muted-dim); margin-top:2px;}
 
-  /* Tables */
   table{width:100%; border-collapse:collapse; background:var(--card); font-size:12.5px;}
   thead th{
     text-align:left; font-size:10.5px; color:var(--muted); font-weight:700;
@@ -243,12 +235,10 @@
   .empty-note{padding:40px; text-align:center; color:var(--muted-dim); font-size:13px;}
   footer{text-align:center; padding:24px; font-size:11px; color:var(--muted-dim); font-family:var(--mono);}
 
-  /* Center all text in the main content area, except the filter bar (which stays left-aligned for usability) */
   main *:not(.filterbar):not(.filterbar *){ text-align:center !important; }
   main .kpi-top{ justify-content:center; }
   main .bar-row{ justify-content:center; }
 
-  /* Agent spotlight card */
   .spotlight{
     background:linear-gradient(135deg, #16243f, #24345f);
     border-radius:14px; padding:22px 26px; color:#fff; margin-bottom:20px;
@@ -320,7 +310,7 @@
         </div>
       </section>
       <section>
-        <div class="section-head"><h2>Agent Leaderboard</h2><span class="hint">roster agents only</span></div>
+        <div class="section-head"><h2>Agent Leaderboard</h2><span class="hint">roster agents</span></div>
         <div class="grid-2">
           <div>
             <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top Scorers</h2></div>
@@ -333,7 +323,7 @@
         </div>
       </section>
       <section>
-        <div class="section-head"><h2>Top 5 Performers</h2><span class="hint">roster agents only</span></div>
+        <div class="section-head"><h2>Top Performers</h2><span class="hint">roster agents</span></div>
         <div class="grid-3">
           <div>
             <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top 5 Empathy</h2></div>
@@ -439,30 +429,44 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxustHLMzlpX4HOo6RJSVxrhbQoeh7i_FADLGGe7UssuD1V9HFldBS4E-ei33wuCGxg/exec";
 const REFRESH_INTERVAL_MS = 30000;
-const EMPATHY_AGENT_TARGET = 0.88;   // Agent Performance page target
-const EMPATHY_PARAM_TARGET = 0.875;  // Empathy Analysis page red-flag threshold
-const AHT_TARGET = 170;              // seconds
+const EMPATHY_AGENT_TARGET = 0.88;   
+const EMPATHY_PARAM_TARGET = 0.875;  
+const AHT_TARGET = 170;              
 const CFS_TARGET = 0.90;
 
 let DATA = { agentAudits: [], empathyWise: [], ort: [], alignment: [] };
 
-// ---------- helpers ----------
+// ---------- ROBUST DATA HELPER FUNCTIONS ----------
 const numOf = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 const pct = (n) => (n*100).toFixed(1) + '%';
 const isPass = (v) => String(v||'').trim().toLowerCase() === 'pass';
 function el(tag, attrs={}, html=''){ const e=document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); e.innerHTML=html; return e; }
 function groupBy(arr, keyFn){ const m=new Map(); arr.forEach(r=>{const k=keyFn(r); if(!m.has(k)) m.set(k,[]); m.get(k).push(r);}); return m; }
 
-// normalize a value that might be "87.50%", 0.875, or "0.875"
+// Robust dynamic key getter (ignores case, spaces, and underscores in headers)
+function getRowVal(row, possibleKeys) {
+  if (!row || typeof row !== 'object') return '';
+  const rowKeys = Object.keys(row);
+  for (const pk of possibleKeys) {
+    const cleanPk = pk.toLowerCase().replace(/[^a-z0-9]/g, '');
+    for (const rk of rowKeys) {
+      if (rk.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPk) {
+        if (row[rk] !== undefined && row[rk] !== null) return row[rk];
+      }
+    }
+  }
+  return '';
+}
+
 function normPct(v){
   if(v === null || v === undefined || v === '') return null;
   if(typeof v === 'string' && v.trim().toUpperCase() === 'NA') return null;
   if(typeof v === 'string' && v.includes('%')) return parseFloat(v.replace('%','')) / 100;
   const n = parseFloat(v);
   if(isNaN(n)) return null;
-  return n; // assume already a 0-1 fraction
+  return n > 1 ? n / 100 : n; 
 }
-// parse "HH:MM:SS" or "No Lag"/"No Extra Break" into decimal hours
+
 function parseDurationHours(v){
   if(!v || typeof v !== 'string') return 0;
   const s = v.trim();
@@ -471,6 +475,7 @@ function parseDurationHours(v){
   if(parts.length !== 3 || parts.some(isNaN)) return 0;
   return parts[0] + parts[1]/60 + parts[2]/3600;
 }
+
 function fmtHoursMin(hoursDecimal){
   if(hoursDecimal <= 0) return '—';
   const totalMin = Math.round(hoursDecimal * 60);
@@ -478,7 +483,71 @@ function fmtHoursMin(hoursDecimal){
   return h>0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-// ---------- data loading ----------
+// Normalize incoming JSON payload tab names regardless of casing or spelling
+function processPayload(json) {
+  const findArray = (...possibleTabNames) => {
+    for (const tab of possibleTabNames) {
+      if (Array.isArray(json[tab]) && json[tab].length > 0) return json[tab];
+    }
+    const keys = Object.keys(json);
+    for (const tab of possibleTabNames) {
+      const cleanTab = tab.toLowerCase().replace(/[^a-z0-9]/g, '');
+      for (const k of keys) {
+        if (k.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanTab && Array.isArray(json[k])) {
+          return json[k];
+        }
+      }
+    }
+    return [];
+  };
+
+  return {
+    agentAudits: findArray('agentAudits', 'IB agent wise', 'IB Agent Wise', 'audits'),
+    empathyWise: findArray('empathyWise', 'Empathywise', 'EmpathyWise', 'empathy'),
+    ort: findArray('ort', 'ORT', 'Ort'),
+    alignment: findArray('alignment', 'Alignment', 'allignment', 'Allignment', 'roster', 'Roster')
+  };
+}
+
+// ---------- ROSTER / ALIGNMENT MATCHING ----------
+function getAlignmentSets() {
+  const names = new Set();
+  const vdis = new Set();
+  (DATA.alignment || []).forEach(row => {
+    const name = String(getRowVal(row, ['Name', 'Agent Name', 'Agent', 'Employee Name']) || '').trim().toLowerCase();
+    const vdi = String(getRowVal(row, ['VDI ID', 'VDI', 'VDI_ID', 'Emp ID']) || '').trim().toLowerCase();
+    if (name) names.add(name);
+    if (vdi) vdis.add(vdi);
+  });
+  return { names, vdis };
+}
+
+function isRosterAgent(agentName, vdiId = '') {
+  const { names, vdis } = getAlignmentSets();
+  // If alignment tab is completely missing or empty, fall back to showing everyone
+  if (names.size === 0 && vdis.size === 0) return true;
+
+  const normName = String(agentName || '').trim().toLowerCase();
+  const normVdi = String(vdiId || '').trim().toLowerCase();
+
+  if (normName && names.has(normName)) return true;
+  if (normVdi && vdis.has(normVdi)) return true;
+
+  return false;
+}
+
+// Map VDI ID to Agent Name from alignment sheet if available
+function getVdiToNameMap() {
+  const map = new Map();
+  (DATA.alignment || []).forEach(row => {
+    const vdi = String(getRowVal(row, ['VDI ID', 'VDI', 'VDI_ID']) || '').trim().toLowerCase();
+    const name = String(getRowVal(row, ['Agent Name', 'Name', 'Agent']) || '').trim();
+    if (vdi && name) map.set(vdi, name);
+  });
+  return map;
+}
+
+// ---------- DATA LOADING ----------
 async function loadData(manual=false){
   const btn = document.getElementById('refreshBtn');
   const chip = document.getElementById('liveChip');
@@ -489,7 +558,7 @@ async function loadData(manual=false){
     document.getElementById('setupBanner').classList.add('show');
     DATA = await loadSampleData();
     chip.classList.add('stale');
-    statusText.textContent = 'Sample data — connect your sheet (see banner)';
+    statusText.textContent = 'Sample data — connect your sheet';
     renderCurrentPage();
     if(manual){ btn.disabled=false; btn.textContent='Refresh now'; }
     return;
@@ -497,18 +566,18 @@ async function loadData(manual=false){
   try{
     const res = await fetch(API_URL, {cache:'no-store'});
     if(!res.ok) throw new Error('HTTP ' + res.status);
-    const json = await res.json();
-    DATA = json;
+    const rawJson = await res.json();
+    DATA = processPayload(rawJson);
+    
     chip.classList.remove('stale');
-    const t = new Date(json.generatedAt || Date.now());
-    const missing = [];
-    if(!json.empathyWise || json.empathyWise.length===0) missing.push('Empathywise');
-    if(!json.ort || json.ort.length===0) missing.push('ORT');
-    if(missing.length>0 && json.debug && json.debug.availableSheetNames){
-      statusText.textContent = `Live, but ${missing.join(' & ')} returned 0 rows. Tabs found in sheet: ${json.debug.availableSheetNames.join(', ')}`;
+    const t = new Date(rawJson.generatedAt || Date.now());
+    
+    const { names, vdis } = getAlignmentSets();
+    if (DATA.alignment.length > 0 && names.size === 0 && vdis.size === 0) {
+      statusText.textContent = `Live · Roster found (${DATA.alignment.length} rows), check column headers ('Name'/'VDI ID')`;
       chip.classList.add('stale');
     } else {
-      statusText.textContent = `Live · updated ${t.toLocaleTimeString()}`;
+      statusText.textContent = `Live · updated ${t.toLocaleTimeString()} · ${names.size} roster agents`;
     }
     renderCurrentPage();
   }catch(err){
@@ -518,35 +587,30 @@ async function loadData(manual=false){
     if(manual){ btn.disabled=false; btn.textContent='Refresh now'; }
   }
 }
+
 async function loadSampleData(){
-  try{ const res = await fetch('sample_data.json', {cache:'no-store'}); return await res.json(); }
-  catch(e){ return { agentAudits:[], empathyWise:[], ort:[], alignment:[] }; }
+  try{ 
+    const res = await fetch('sample_data.json', {cache:'no-store'}); 
+    return processPayload(await res.json()); 
+  } catch(e){ 
+    return { agentAudits:[], empathyWise:[], ort:[], alignment:[] }; 
+  }
 }
 
-// ---------- sidebar toggle ----------
+// ---------- SIDEBAR & ROUTING ----------
 function toggleSidebar(){
   document.body.classList.toggle('sidebar-collapsed');
-  try{
-    localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed') ? '1' : '0');
-  }catch(e){ /* localStorage unavailable - ignore */ }
 }
-(function initSidebarState(){
-  try{
-    if(localStorage.getItem('sidebarCollapsed') === '1'){
-      document.body.classList.add('sidebar-collapsed');
-    }
-  }catch(e){ /* localStorage unavailable - ignore */ }
-})();
 
-// ---------- page routing ----------
 const PAGE_META = {
   overview:   {title:'Dashboard Overview', sub:'Team performance summary'},
   agent:      {title:'Agent Performance', sub:'From IB Agent Wise — audits, pass/fail, empathy vs 88% target'},
-  empathy:    {title:'Empathy Analysis', sub:'From EmpathyWise — parameter pass % vs 87.5% target'},
+  empathy:    {title:'Empathy Analysis', sub:'From Empathywise — parameter pass % vs 87.5% target'},
   adherence:  {title:'Adherence & Break', sub:'From ORT — adherence, over break, lag hour'},
   ahtcfs:     {title:'AHT & CFS', sub:'From ORT — AHT target 170s, CFS target 90%'},
   log:        {title:'Audit Log', sub:'Raw call-level audit records'}
 };
+
 let CURRENT_PAGE = 'overview';
 function setPage(name){
   CURRENT_PAGE = name;
@@ -558,12 +622,13 @@ function setPage(name){
   document.getElementById('pageSub').textContent = PAGE_META[name].sub;
   renderCurrentPage();
 }
+
 function renderCurrentPage(){
   if(DATA.agentAudits.length===0 && DATA.ort.length===0 && DATA.empathyWise.length===0){
     document.getElementById('footerNote').textContent = 'No data loaded yet.';
   } else {
     document.getElementById('footerNote').textContent =
-      `${DATA.agentAudits.length} audits · ${DATA.ort.length} agents (ORT) · ${DATA.empathyWise.length} agents (Empathy) · auto-refresh every ${REFRESH_INTERVAL_MS/1000}s`;
+      `${DATA.agentAudits.length} audits · ${DATA.ort.length} agents (ORT) · ${DATA.empathyWise.length} agents (Empathy) · ${DATA.alignment.length} roster rows`;
   }
   populateAgentSelect();
   if(CURRENT_PAGE==='overview') renderOverview();
@@ -582,31 +647,22 @@ function kpiCard(container, label, value, iconClass, icon, sub='', subClass=''){
   `));
 }
 
-// ============ ALIGNMENT ROSTER FILTER ============
-// Agent-wise listings should only show people present in the "alignment"
-// roster tab; team-wide totals (KPI cards) still include everyone.
-function alignmentNameSet(){
-  return new Set(DATA.alignment.map(a=>(a['Name']||a['Agent Name']||'').toString().trim()).filter(Boolean));
-}
-function alignmentVdiSet(){
-  return new Set(DATA.alignment.map(a=>(a['VDI ID']||'').toString().trim()).filter(Boolean));
-}
-
-// ============ OVERVIEW ============
+// ---------- AGGREGATION & RENDERERS ----------
 function agentAggregates(onlyRoster=false){
-  const byAgent = groupBy(DATA.agentAudits, r=>r['Agent Name']||'Unknown');
-  const allowed = onlyRoster ? alignmentNameSet() : null;
+  const byAgent = groupBy(DATA.agentAudits, r => String(getRowVal(r, ['Agent Name', 'Agent', 'Name']) || 'Unknown').trim());
   const out = [];
   byAgent.forEach((rows, agent) => {
     if(!agent || agent==='Unknown') return;
-    if(allowed && !allowed.has(agent.toString().trim())) return;
+    const sampleVdi = String(getRowVal(rows[0], ['VDI ID', 'VDI', 'VDI_ID']) || '').trim();
+    if(onlyRoster && !isRosterAgent(agent, sampleVdi)) return;
+
     const total = rows.length;
-    const pass = rows.filter(r=>isPass(r['Pass or Fail'])).length;
+    const pass = rows.filter(r=>isPass(getRowVal(r, ['Pass or Fail', 'Result', 'Pass/Fail']))).length;
     const fail = total - pass;
-    const ep = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Pass Count']),0);
-    const ef = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
+    const ep = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Total Emp Parameter Pass Count', 'Emp Pass', 'Empathy Pass'])),0);
+    const ef = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Total Emp Parameter Fail Count', 'Emp Fail', 'Empathy Fail'])),0);
     const empPct = (ep+ef)>0 ? ep/(ep+ef) : null;
-    const avgScore = rows.reduce((s,r)=>s+numOf(r['Evaluation Score']),0) / total;
+    const avgScore = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Evaluation Score', 'Score'])),0) / total;
     out.push({agent, total, pass, fail, failPct: fail/total, ep, ef, empPct, avgScore});
   });
   return out;
@@ -616,11 +672,11 @@ function renderOverview(){
   const box = document.getElementById('kpiOverview'); box.innerHTML='';
   const rows = DATA.agentAudits;
   const total = rows.length;
-  const passCount = rows.filter(r=>isPass(r['Pass or Fail'])).length;
+  const passCount = rows.filter(r=>isPass(getRowVal(r, ['Pass or Fail', 'Result']))).length;
   const failCount = total - passCount;
-  const critFree = rows.length ? rows.filter(r=>isPass(r['Critical Error'])).length/rows.length : 0;
-  const epSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Pass Count']),0);
-  const efSum = rows.reduce((s,r)=>s+numOf(r['Total Emp Parameter Fail Count']),0);
+  const critFree = rows.length ? rows.filter(r=>isPass(getRowVal(r, ['Critical Error']))).length/rows.length : 0;
+  const epSum = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Total Emp Parameter Pass Count'])),0);
+  const efSum = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Total Emp Parameter Fail Count'])),0);
   const empPct = (epSum+efSum)>0 ? epSum/(epSum+efSum) : 0;
 
   kpiCard(box, 'Total Audits', total.toLocaleString(), 'blue', '▤');
@@ -628,11 +684,11 @@ function renderOverview(){
   kpiCard(box, 'Fail Rate', total? pct(failCount/total) : '—', 'bad', '✕', `${failCount} failed`, failCount>0?'bad':'');
   kpiCard(box, 'Empathy Pass %', pct(empPct), empPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', empPct>=EMPATHY_AGENT_TARGET?'Meets 88% target':'Below 88% target', empPct>=EMPATHY_AGENT_TARGET?'good':'bad');
   kpiCard(box, 'Critical Error Free', pct(critFree), critFree>=0.9?'good':'warn', '⚑');
-  kpiCard(box, 'Agents Audited', new Set(rows.map(r=>r['Agent Name'])).size, 'purple', '☺');
+  kpiCard(box, 'Agents Audited', new Set(rows.map(r=>getRowVal(r, ['Agent Name', 'Agent']))).size, 'purple', '☺');
 
-  // skill bars
+  // Skill bars
   const skillBox = document.getElementById('ovSkillBars'); skillBox.innerHTML='';
-  const bySkill = groupBy(rows, r=>r['Skill']||'Unknown');
+  const bySkill = groupBy(rows, r=>getRowVal(r, ['Skill'])||'Unknown');
   const skillEntries = [...bySkill.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
   if(skillEntries.length===0) skillBox.appendChild(el('div',{class:'empty-note'},'No data.'));
   const maxSkill = Math.max(1,...skillEntries.map(([,r])=>r.length));
@@ -642,13 +698,13 @@ function renderOverview(){
     const track = el('div',{class:'bar-track'});
     track.appendChild(el('div',{class:'bar-fill blue', style:`width:${Math.max(2,(srows.length/maxSkill)*100)}%`}));
     row.appendChild(track);
-    row.appendChild(el('div',{class:'bar-val'}, srows.length+' · '+pct(srows.filter(r=>isPass(r['Pass or Fail'])).length/srows.length)));
+    row.appendChild(el('div',{class:'bar-val'}, srows.length+' · '+pct(srows.filter(r=>isPass(getRowVal(r, ['Pass or Fail']))).length/srows.length)));
     skillBox.appendChild(row);
   });
 
-  // site bars
+  // Site bars
   const siteBox = document.getElementById('ovSiteBars'); siteBox.innerHTML='';
-  const bySite = groupBy(rows, r=>r['Site']||'Unknown');
+  const bySite = groupBy(rows, r=>getRowVal(r, ['Site'])||'Unknown');
   const siteEntries = [...bySite.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
   if(siteEntries.length===0) siteBox.appendChild(el('div',{class:'empty-note'},'No data.'));
   const maxSite = Math.max(1,...siteEntries.map(([,r])=>r.length));
@@ -662,79 +718,79 @@ function renderOverview(){
     siteBox.appendChild(row);
   });
 
-  // leaderboards (roster only)
+  // Leaderboards (Roster Filtered)
   const topScorersBody = document.getElementById('ovTopScorers'); topScorersBody.innerHTML='';
   const attentionBody = document.getElementById('ovAttention'); attentionBody.innerHTML='';
-  const allAggs = agentAggregates(true);
-  [...allAggs].sort((a,b)=>b.avgScore-a.avgScore).slice(0,8).forEach((a,i)=>{
+  const rosterAggs = agentAggregates(true);
+  
+  [...rosterAggs].sort((a,b)=>b.avgScore-a.avgScore).slice(0,8).forEach((a,i)=>{
     topScorersBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${a.avgScore.toFixed(1)}</td><td class="num">${a.total}</td>`));
   });
-  if(topScorersBody.children.length===0) topScorersBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No data.</td>`));
-  const belowTarget = allAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).sort((a,b)=>a.empPct-b.empPct);
+  if(topScorersBody.children.length===0) topScorersBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No roster data matched.</td>`));
+
+  const belowTarget = rosterAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).sort((a,b)=>a.empPct-b.empPct);
   belowTarget.slice(0,8).forEach((a,i)=>{
     const shortfall = EMPATHY_AGENT_TARGET - a.empPct;
     attentionBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${pct(a.empPct)}</td><td class="num cell-red">-${pct(shortfall)}</td>`));
   });
-  if(attentionBody.children.length===0) attentionBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">Everyone meets the empathy target 🎉</td>`));
+  if(attentionBody.children.length===0) attentionBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">Everyone meets empathy target 🎉</td>`));
 
-  // Top 5 Empathy (roster only)
+  // Top 5 Empathy
   const top5EmpathyBody = document.getElementById('ovTop5Empathy'); top5EmpathyBody.innerHTML='';
-  [...allAggs].filter(a=>a.empPct!==null).sort((a,b)=>b.empPct-a.empPct).slice(0,5).forEach((a,i)=>{
+  [...rosterAggs].filter(a=>a.empPct!==null).sort((a,b)=>b.empPct-a.empPct).slice(0,5).forEach((a,i)=>{
     top5EmpathyBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${pct(a.empPct)}</td>`));
   });
   if(top5EmpathyBody.children.length===0) top5EmpathyBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No data.</td>`));
 
-  // Top 5 CFS & Top 5 AHT (roster only, from ORT)
-  const allowedNames = alignmentNameSet();
-  const rosterOrt = DATA.ort.filter(r => allowedNames.has((r['Name']||'').toString().trim()));
+  // Top 5 CFS & Top 5 AHT (From ORT, Roster Filtered)
+  const rosterOrt = DATA.ort.filter(r => isRosterAgent(getRowVal(r, ['Name', 'Agent Name']), getRowVal(r, ['VDI ID', 'VDI'])));
 
   const top5CfsBody = document.getElementById('ovTop5Cfs'); top5CfsBody.innerHTML='';
-  [...rosterOrt].filter(r=>normPct(r['CFS%'])!==null).sort((a,b)=>normPct(b['CFS%'])-normPct(a['CFS%'])).slice(0,5).forEach((r,i)=>{
-    top5CfsBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${r['Name']}</td><td class="num">${pct(normPct(r['CFS%']))}</td>`));
+  [...rosterOrt].filter(r=>normPct(getRowVal(r, ['CFS%']))!==null).sort((a,b)=>normPct(getRowVal(b, ['CFS%']))-normPct(getRowVal(a, ['CFS%']))).slice(0,5).forEach((r,i)=>{
+    const name = getRowVal(r, ['Name', 'Agent Name']);
+    top5CfsBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${name}</td><td class="num">${pct(normPct(getRowVal(r, ['CFS%'])))}</td>`));
   });
   if(top5CfsBody.children.length===0) top5CfsBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No data.</td>`));
 
   const top5AhtBody = document.getElementById('ovTop5Aht'); top5AhtBody.innerHTML='';
-  [...rosterOrt].filter(r=>numOf(r['AHT'])>0).sort((a,b)=>numOf(a['AHT'])-numOf(b['AHT'])).slice(0,5).forEach((r,i)=>{
-    top5AhtBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${r['Name']}</td><td class="num">${numOf(r['AHT']).toFixed(1)}</td>`));
+  [...rosterOrt].filter(r=>numOf(getRowVal(r, ['AHT']))>0).sort((a,b)=>numOf(getRowVal(a, ['AHT']))-numOf(getRowVal(b, ['AHT']))).slice(0,5).forEach((r,i)=>{
+    const name = getRowVal(r, ['Name', 'Agent Name']);
+    top5AhtBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${name}</td><td class="num">${numOf(getRowVal(r, ['AHT'])).toFixed(1)}</td>`));
   });
   if(top5AhtBody.children.length===0) top5AhtBody.appendChild(el('tr',{},`<td colspan="3" class="empty-note">No data.</td>`));
 }
 
-// ============ AGENT PERFORMANCE PAGE ============
+// ---------- AGENT PERFORMANCE PAGE ----------
 function populateAgentSelect(){
   const sel = document.getElementById('agentSelect');
   const current = sel.value;
-  const allowed = alignmentNameSet();
-  const names = [...new Set(DATA.agentAudits.map(r=>r['Agent Name']).filter(Boolean))]
-    .filter(n=>allowed.has(n.toString().trim()))
+  const names = [...new Set(DATA.agentAudits.map(r=>getRowVal(r, ['Agent Name', 'Agent'])).filter(Boolean))]
+    .filter(n=>isRosterAgent(n))
     .sort();
   sel.innerHTML = '<option value="">All Agents</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
   if(names.includes(current)) sel.value = current;
 }
 
 function renderAgentPage(){
-  const teamAggs = agentAggregates();       // unfiltered - team-wide KPI totals
-  const rosterAggs = agentAggregates(true); // roster-only - table & spotlight
+  const teamAggs = agentAggregates(false); 
+  const rosterAggs = agentAggregates(true); 
   const selected = document.getElementById('agentSelect').value;
   const spotlight = document.getElementById('agentSpotlight');
 
-  // KPIs (team-level totals, includes everyone audited)
   const box = document.getElementById('kpiAgent'); box.innerHTML='';
   const totalAudits = teamAggs.reduce((s,a)=>s+a.total,0);
   const totalFail = teamAggs.reduce((s,a)=>s+a.fail,0);
   const teamEp = teamAggs.reduce((s,a)=>s+a.ep,0), teamEf = teamAggs.reduce((s,a)=>s+a.ef,0);
   const teamEmpPct = (teamEp+teamEf)>0 ? teamEp/(teamEp+teamEf) : 0;
-  const belowTarget = teamAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).length;
+  const belowTarget = rosterAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).length;
 
-  kpiCard(box, 'Team Audits', totalAudits, 'blue', '▤');
+  kpiCard(box, 'Total Audits', totalAudits, 'blue', '▤');
   kpiCard(box, 'Team Fail %', totalAudits? pct(totalFail/totalAudits):'—', 'bad', '✕');
   kpiCard(box, 'Team Empathy %', pct(teamEmpPct), teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad', '♥', teamEmpPct>=EMPATHY_AGENT_TARGET?'Meets target':'Below 88% target', teamEmpPct>=EMPATHY_AGENT_TARGET?'good':'bad');
-  kpiCard(box, 'Below Empathy Target', belowTarget, belowTarget>0?'warn':'good', '⚑', `of ${teamAggs.length} agents`);
+  kpiCard(box, 'Below Target (Roster)', belowTarget, belowTarget>0?'warn':'good', '⚑', `of ${rosterAggs.length} roster agents`);
 
-  // spotlight (roster agents only)
   if(selected){
-    const a = rosterAggs.find(x=>x.agent===selected);
+    const a = rosterAggs.find(x=>x.agent===selected) || teamAggs.find(x=>x.agent===selected);
     if(a){
       spotlight.style.display='flex';
       const shortfall = a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET ? EMPATHY_AGENT_TARGET-a.empPct : 0;
@@ -750,10 +806,12 @@ function renderAgentPage(){
     } else { spotlight.style.display='none'; }
   } else { spotlight.style.display='none'; }
 
-  // table (roster only)
   const tbody = document.getElementById('agentTable'); tbody.innerHTML='';
   const rowsToShow = selected ? rosterAggs.filter(a=>a.agent===selected) : rosterAggs;
-  if(rowsToShow.length===0){ tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No roster agents matched. Check that names in the "alignment" tab match "Agent Name" in "IB agent wise" exactly.</td>`)); return; }
+  if(rowsToShow.length===0){ 
+    tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No roster agents matched. Check alignment roster names or select 'All Agents'.</td>`)); 
+    return; 
+  }
   [...rowsToShow].sort((a,b)=>(a.empPct??1)-(b.empPct??1)).forEach(a=>{
     const shortfall = a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET ? EMPATHY_AGENT_TARGET-a.empPct : 0;
     tbody.appendChild(el('tr',{}, `
@@ -770,22 +828,18 @@ function renderAgentPage(){
   });
 }
 
-// ============ EMPATHY ANALYSIS PAGE ============
+// ---------- EMPATHY ANALYSIS PAGE ----------
 const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speech Clarity / Clarity of Communication','Proper Listening','Personalization','Time / Hold Management','Emotional Tone with Courtesy','Closing Courtesy'];
 
 function renderEmpathyPage(){
   const rows = DATA.empathyWise;
   const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
-  if(rows.length===0){
-    cardBox.appendChild(el('div',{class:'empty-note', style:'grid-column:1/-1;'},
-      `No data returned for the "Empathywise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
-  }
 
   EMPATHY_PARAMS.forEach(param => {
     let wsum=0, csum=0;
     rows.forEach(r=>{
-      const audit = numOf(r['Audit Count']);
-      const val = normPct(r[param]);
+      const audit = numOf(getRowVal(r, ['Audit Count', 'Audits', 'Count']));
+      const val = normPct(getRowVal(r, [param]));
       if(audit>0 && val!==null){ wsum += val*audit; csum += audit; }
     });
     const avg = csum>0 ? wsum/csum : null;
@@ -797,42 +851,48 @@ function renderEmpathyPage(){
     `));
   });
 
-  // matrix (roster only)
-  const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Agent Name'] || a['Name']]));
-  const allowedVdi = alignmentVdiSet();
-  const rosterRows = rows.filter(r => allowedVdi.has((r['VDI ID']||'').toString().trim()));
+  const vdiMap = getVdiToNameMap();
+  const rosterRows = rows.filter(r => {
+    const vdi = String(getRowVal(r, ['VDI ID', 'VDI', 'VDI_ID'])||'').trim();
+    const name = String(getRowVal(r, ['Agent Name', 'Name', 'Agent'])||'').trim();
+    return isRosterAgent(name, vdi);
+  });
+
   const head = document.getElementById('empathyMatrixHead');
-  
   head.innerHTML = '<th>VDI ID</th><th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
-  
-  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No roster agents matched. Check that VDI IDs in the "alignment" tab match "Empathywise".</td>`)); return; }
+  if(rosterRows.length===0){ 
+    body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No roster agents matched in Empathywise data.</td>`)); 
+    return; 
+  }
   
   rosterRows.forEach(r=>{
-    const vdi = r['VDI ID'] || '';
-    const name = nameMap.get(vdi) || 'Unknown';
-    let cells = `<td>${vdi}</td><td>${name}</td>`;
-    
+    const vdi = String(getRowVal(r, ['VDI ID', 'VDI', 'VDI_ID'])||'');
+    let name = String(getRowVal(r, ['Agent Name', 'Name', 'Agent'])||'');
+    if(!name && vdi) name = vdiMap.get(vdi.toLowerCase()) || '—';
+    const auditCount = getRowVal(r, ['Audit Count', 'Audits', 'Count']) || 0;
+
+    let cells = `<td>${vdi||'—'}</td><td>${name}</td>`;
     EMPATHY_PARAMS.forEach(p=>{
-      const val = normPct(r[p]);
+      const val = normPct(getRowVal(r, [p]));
       if(val===null){ cells += `<td class="num">—</td>`; }
       else { cells += `<td class="num ${val<EMPATHY_PARAM_TARGET?'cell-red':''}">${pct(val)}</td>`; }
     });
-    cells += `<td class="num">${r['Audit Count']||0}</td>`;
+    cells += `<td class="num">${auditCount}</td>`;
     body.appendChild(el('tr',{}, cells));
   });
 }
 
-// ============ ADHERENCE & BREAK PAGE ============
+// ---------- ADHERENCE & BREAK PAGE ----------
 function renderAdherencePage(){
   const rows = DATA.ort;
   const box = document.getElementById('kpiAdherence'); box.innerHTML='';
-  const adherenceVals = rows.map(r=>normPct(r['Adherence%'])).filter(v=>v!==null);
+  const adherenceVals = rows.map(r=>normPct(getRowVal(r, ['Adherence%','Adherence']))).filter(v=>v!==null);
   const avgAdherence = adherenceVals.length ? adherenceVals.reduce((a,b)=>a+b,0)/adherenceVals.length : 0;
-  const overBreakAgents = rows.filter(r=>{ const v=(r['Extra Break']||'').toString(); return v && !v.toLowerCase().startsWith('no'); }).length;
-  const lagAgents = rows.filter(r=>{ const v=(r['Lag Time']||'').toString(); return v && !v.toLowerCase().startsWith('no'); }).length;
-  const totalLagHours = rows.reduce((s,r)=>s+parseDurationHours(r['Lag Time']),0);
+  const overBreakAgents = rows.filter(r=>{ const v=String(getRowVal(r, ['Extra Break','Over Break'])||''); return v && !v.toLowerCase().startsWith('no'); }).length;
+  const lagAgents = rows.filter(r=>{ const v=String(getRowVal(r, ['Lag Time','Lag Hour'])||''); return v && !v.toLowerCase().startsWith('no'); }).length;
+  const totalLagHours = rows.reduce((s,r)=>s+parseDurationHours(String(getRowVal(r, ['Lag Time','Lag Hour'])||'')),0);
 
   kpiCard(box, 'Team Avg Adherence', pct(avgAdherence), avgAdherence>=0.9?'good':'warn', '◷');
   kpiCard(box, 'Agents with Over Break', overBreakAgents, overBreakAgents>0?'warn':'good', '⚠', `of ${rows.length} agents`);
@@ -840,18 +900,19 @@ function renderAdherencePage(){
   kpiCard(box, 'Total Lag Hours', totalLagHours.toFixed(1)+'h', 'bad', '⏳');
 
   const tbody = document.getElementById('adherenceTable'); tbody.innerHTML='';
-  const allowedNamesAdh = alignmentNameSet();
-  const rosterRows = rows.filter(r => allowedNamesAdh.has((r['Name']||'').toString().trim()));
+  const rosterRows = rows.filter(r => isRosterAgent(getRowVal(r, ['Name', 'Agent Name']), getRowVal(r, ['VDI ID', 'VDI'])));
+  
   if(rosterRows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No roster agents matched in the "ORT" tab. Check that names in "alignment" match "Name" in "ORT" exactly.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No roster agents matched in ORT tab.</td>`));
     return;
   }
-  [...rosterRows].sort((a,b)=>(normPct(a['Adherence%'])??1)-(normPct(b['Adherence%'])??1)).forEach(r=>{
-    const adh = normPct(r['Adherence%']);
-    const overBreak = parseDurationHours(r['Extra Break']);
-    const lag = parseDurationHours(r['Lag Time']);
+  [...rosterRows].sort((a,b)=>(normPct(getRowVal(a, ['Adherence%']))??1)-(normPct(getRowVal(b, ['Adherence%']))??1)).forEach(r=>{
+    const name = getRowVal(r, ['Name', 'Agent Name']);
+    const adh = normPct(getRowVal(r, ['Adherence%']));
+    const overBreak = parseDurationHours(String(getRowVal(r, ['Extra Break','Over Break'])||''));
+    const lag = parseDurationHours(String(getRowVal(r, ['Lag Time','Lag Hour'])||''));
     tbody.appendChild(el('tr',{}, `
-      <td>${r['Name']}</td>
+      <td>${name}</td>
       <td class="num ${adh!==null && adh<0.85?'cell-red':''}">${adh!==null?pct(adh):'—'}</td>
       <td class="num">${overBreak>0?fmtHoursMin(overBreak):'—'}</td>
       <td class="num">${lag>0?fmtHoursMin(lag):'—'}</td>
@@ -859,16 +920,16 @@ function renderAdherencePage(){
   });
 }
 
-// ============ AHT & CFS PAGE ============
+// ---------- AHT & CFS PAGE ----------
 function renderAhtCfsPage(){
   const rows = DATA.ort;
   const box = document.getElementById('kpiAhtCfs'); box.innerHTML='';
-  const ahtVals = rows.map(r=>numOf(r['AHT'])).filter(v=>v>0);
+  const ahtVals = rows.map(r=>numOf(getRowVal(r, ['AHT']))).filter(v=>v>0);
   const avgAht = ahtVals.length ? ahtVals.reduce((a,b)=>a+b,0)/ahtVals.length : 0;
-  const cfsVals = rows.map(r=>normPct(r['CFS%'])).filter(v=>v!==null);
+  const cfsVals = rows.map(r=>normPct(getRowVal(r, ['CFS%']))).filter(v=>v!==null);
   const avgCfs = cfsVals.length ? cfsVals.reduce((a,b)=>a+b,0)/cfsVals.length : 0;
-  const ahtMeeting = rows.filter(r=>{ const v=numOf(r['AHT']); return v>0 && v<=AHT_TARGET; }).length;
-  const cfsMeeting = rows.filter(r=>{ const v=normPct(r['CFS%']); return v!==null && v>=CFS_TARGET; }).length;
+  const ahtMeeting = rows.filter(r=>{ const v=numOf(getRowVal(r, ['AHT'])); return v>0 && v<=AHT_TARGET; }).length;
+  const cfsMeeting = rows.filter(r=>{ const v=normPct(getRowVal(r, ['CFS%'])); return v!==null && v>=CFS_TARGET; }).length;
 
   kpiCard(box, 'Team Avg AHT', avgAht.toFixed(1)+'s', 'blue', '◎', `target ${AHT_TARGET}s`);
   kpiCard(box, 'AHT Target Met', `${ahtMeeting}/${rows.length}`, ahtMeeting===rows.length?'good':'warn', '✓');
@@ -876,20 +937,21 @@ function renderAhtCfsPage(){
   kpiCard(box, 'CFS Target Met', `${cfsMeeting}/${cfsVals.length}`, cfsMeeting===cfsVals.length?'good':'warn', '✓');
 
   const tbody = document.getElementById('ahtCfsTable'); tbody.innerHTML='';
-  const allowedNamesAht = alignmentNameSet();
-  const rosterRows = rows.filter(r => allowedNamesAht.has((r['Name']||'').toString().trim()));
+  const rosterRows = rows.filter(r => isRosterAgent(getRowVal(r, ['Name', 'Agent Name']), getRowVal(r, ['VDI ID', 'VDI'])));
+  
   if(rosterRows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No roster agents matched in the "ORT" tab. Check that names in "alignment" match "Name" in "ORT" exactly.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No roster agents matched in ORT tab.</td>`));
     return;
   }
   rosterRows.forEach(r=>{
-    const aht = numOf(r['AHT']);
-    const cfs = normPct(r['CFS%']);
+    const name = getRowVal(r, ['Name', 'Agent Name']);
+    const aht = numOf(getRowVal(r, ['AHT']));
+    const cfs = normPct(getRowVal(r, ['CFS%']));
     const ahtMet = aht>0 && aht<=AHT_TARGET;
     const ahtExcess = ahtMet ? 0 : aht-AHT_TARGET;
     const cfsMet = cfs!==null && cfs>=CFS_TARGET;
     tbody.appendChild(el('tr',{}, `
-      <td>${r['Name']}</td>
+      <td>${name}</td>
       <td class="num">${aht?aht.toFixed(1):'—'}</td>
       <td>${aht ? (ahtMet ? '<span class="pill good">Target Met</span>' : `<span class="pill bad">Reduce by ${ahtExcess.toFixed(1)}s</span>`) : '—'}</td>
       <td class="num">${cfs!==null?pct(cfs):'—'}</td>
@@ -898,55 +960,65 @@ function renderAhtCfsPage(){
   });
 }
 
-// ============ AUDIT LOG ============
+// ---------- AUDIT LOG ----------
 function renderAuditLog(){
   const search = (document.getElementById('logSearch').value||'').toLowerCase();
   const tbody = document.getElementById('auditLogTable'); tbody.innerHTML='';
-  const allowedNamesLog = alignmentNameSet();
-  const rosterAudits = DATA.agentAudits.filter(r => allowedNamesLog.has((r['Agent Name']||'').toString().trim()));
+  const rosterAudits = DATA.agentAudits.filter(r => isRosterAgent(getRowVal(r, ['Agent Name', 'Agent']), getRowVal(r, ['VDI ID', 'VDI'])));
+  
   const sorted = [...rosterAudits].sort((a,b)=>{
-    const da=(a['Eval Date']||''), db=(b['Eval Date']||'');
+    const da = String(getRowVal(a, ['Eval Date', 'Date'])||'');
+    const db = String(getRowVal(b, ['Eval Date', 'Date'])||'');
     return db.localeCompare(da);
   });
+
   let shown=0;
   for(const r of sorted){
     if(shown>=200) break;
-    const hay = `${r['Agent Name']} ${r['QA']}`.toLowerCase();
+    const agent = getRowVal(r, ['Agent Name', 'Agent']);
+    const qa = getRowVal(r, ['QA']);
+    const hay = `${agent} ${qa}`.toLowerCase();
     if(search && !hay.includes(search)) continue;
-    const pass = isPass(r['Pass or Fail']);
+
+    const resVal = getRowVal(r, ['Pass or Fail', 'Result']);
+    const pass = isPass(resVal);
     tbody.appendChild(el('tr',{}, `
-      <td>${r['Eval Date']||''}</td><td>${r['Agent Name']||''}</td><td>${r['QA']||''}</td><td>${r['Skill']||''}</td>
-      <td>${r['ANI']||''}</td><td>${r['Topic']||''}</td>
-      <td><span class="pill ${pass?'pass':'fail'}">${r['Pass or Fail']||''}</span></td>
-      <td>${r['Critical Error']||''}</td><td>${r['RTC']||''}</td>
+      <td>${getRowVal(r, ['Eval Date', 'Date'])||''}</td>
+      <td>${agent||''}</td>
+      <td>${qa||''}</td>
+      <td>${getRowVal(r, ['Skill'])||''}</td>
+      <td>${getRowVal(r, ['ANI'])||''}</td>
+      <td>${getRowVal(r, ['Topic'])||''}</td>
+      <td><span class="pill ${pass?'pass':'fail'}">${resVal||''}</span></td>
+      <td>${getRowVal(r, ['Critical Error'])||''}</td>
+      <td>${getRowVal(r, ['RTC'])||''}</td>
     `));
     shown++;
   }
-  if(shown===0) tbody.appendChild(el('tr',{}, `<td colspan="9" class="empty-note">No matching audits.</td>`));
+  if(shown===0) tbody.appendChild(el('tr',{}, `<td colspan="9" class="empty-note">No matching audit logs found.</td>`));
 }
 
-// ============ CSV export (exports current page's primary table, roster-filtered) ============
+// ---------- EXPORT CSV ----------
 function exportCSV(){
   let cols, rowsData, filename;
-  const allowedNames = alignmentNameSet();
   if(CURRENT_PAGE==='agent'){
     cols=['Agent','Audits','Pass','Fail','Fail%','Empathy Pass','Empathy Fail','Empathy%'];
     rowsData = agentAggregates(true).map(a=>[a.agent,a.total,a.pass,a.fail,pct(a.failPct),a.ep,a.ef,a.empPct!==null?pct(a.empPct):'']);
     filename='agent_performance';
   } else if(CURRENT_PAGE==='adherence'){
     cols=['Agent','Adherence%','Over Break','Lag Hour'];
-    rowsData = DATA.ort.filter(r=>allowedNames.has((r['Name']||'').toString().trim()))
-      .map(r=>[r['Name'], normPct(r['Adherence%'])!==null?pct(normPct(r['Adherence%'])):'', r['Extra Break'], r['Lag Time']]);
+    rowsData = DATA.ort.filter(r=>isRosterAgent(getRowVal(r, ['Name', 'Agent Name'])))
+      .map(r=>[getRowVal(r, ['Name', 'Agent Name']), normPct(getRowVal(r, ['Adherence%']))!==null?pct(normPct(getRowVal(r, ['Adherence%']))):'', getRowVal(r, ['Extra Break']), getRowVal(r, ['Lag Time'])]);
     filename='adherence_break';
   } else if(CURRENT_PAGE==='ahtcfs'){
     cols=['Agent','AHT','CFS%'];
-    rowsData = DATA.ort.filter(r=>allowedNames.has((r['Name']||'').toString().trim()))
-      .map(r=>[r['Name'], r['AHT'], r['CFS%']]);
+    rowsData = DATA.ort.filter(r=>isRosterAgent(getRowVal(r, ['Name', 'Agent Name'])))
+      .map(r=>[getRowVal(r, ['Name', 'Agent Name']), getRowVal(r, ['AHT']), getRowVal(r, ['CFS%'])]);
     filename='aht_cfs';
   } else {
     cols=['Eval Date','Agent Name','QA','Skill','ANI','Topic','Result','Critical','RTC'];
-    rowsData = DATA.agentAudits.filter(r=>allowedNames.has((r['Agent Name']||'').toString().trim()))
-      .map(r=>[r['Eval Date'],r['Agent Name'],r['QA'],r['Skill'],r['ANI'],r['Topic'],r['Pass or Fail'],r['Critical Error'],r['RTC']]);
+    rowsData = DATA.agentAudits.filter(r=>isRosterAgent(getRowVal(r, ['Agent Name', 'Agent'])))
+      .map(r=>[getRowVal(r, ['Eval Date']),getRowVal(r, ['Agent Name']),getRowVal(r, ['QA']),getRowVal(r, ['Skill']),getRowVal(r, ['ANI']),getRowVal(r, ['Topic']),getRowVal(r, ['Pass or Fail']),getRowVal(r, ['Critical Error']),getRowVal(r, ['RTC'])]);
     filename='audit_log';
   }
   const lines = [cols.join(',')].concat(rowsData.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')));
@@ -956,7 +1028,7 @@ function exportCSV(){
   URL.revokeObjectURL(url);
 }
 
-// ---------- boot ----------
+// ---------- BOOT ----------
 loadData();
 setInterval(()=>loadData(false), REFRESH_INTERVAL_MS);
 </script>
