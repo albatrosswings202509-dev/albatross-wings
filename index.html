@@ -194,16 +194,6 @@
   .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
   @media (max-width:960px){.grid-2, .grid-3{grid-template-columns:1fr;}}
 
-  .bar-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
-  .bar-label{width:150px; font-size:12px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink);}
-  .bar-track{flex:1; background:#eef1f7; height:14px; border-radius:4px; overflow:hidden;}
-  .bar-fill{height:100%; border-radius:4px;}
-  .bar-fill.blue{background:var(--blue);}
-  .bar-fill.good{background:var(--good);}
-  .bar-fill.bad{background:var(--bad);}
-  .bar-fill.warn{background:var(--warn);}
-  .bar-val{width:90px; text-align:right; font-family:var(--mono); font-size:11.5px; color:var(--muted); flex-shrink:0;}
-
   .param-card{
     border-radius:12px; padding:14px 16px; border:1px solid var(--line);
     background:var(--good-dim);
@@ -237,7 +227,6 @@
 
   main *:not(.filterbar):not(.filterbar *){ text-align:center !important; }
   main .kpi-top{ justify-content:center; }
-  main .bar-row{ justify-content:center; }
 
   .spotlight{
     background:linear-gradient(135deg, #16243f, #24345f);
@@ -297,24 +286,12 @@
     <!-- ============ OVERVIEW ============ -->
     <div class="page active" id="page-overview">
       <section><div class="kpi-row" id="kpiOverview"></div></section>
-       <section>
-        <div class="grid-2">
-          <div class="panel">
-            <div class="panel-title">AUDIT VOLUME BY SKILL</div>
-            <div id="ovSkillBars"></div>
-          </div>
-          <div class="panel">
-            <div class="panel-title">VOLUME BY SITE</div>
-            <div id="ovSiteBars"></div>
-          </div>
-        </div>
-      </section>
       <section>
         <div class="section-head"><h2>Agent Leaderboard</h2><span class="hint">roster agents</span></div>
         <div class="grid-2">
           <div>
-            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top Scorers</h2></div>
-            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">Avg Score</th><th class="num">Audits</th></tr></thead><tbody id="ovTopScorers"></tbody></table></div>
+            <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Top CE Holders</h2></div>
+            <div class="table-wrap"><table><thead><tr><th>#</th><th>Agent</th><th class="num">CE Count</th><th class="num">Audits</th></tr></thead><tbody id="ovTopCeHolders"></tbody></table></div>
           </div>
           <div>
             <div class="section-head" style="margin-bottom:8px;"><h2 style="font-size:13px;">Needs Attention (below empathy target)</h2></div>
@@ -427,7 +404,7 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyb7lK5ouftKMTBqDYE-WtUiqk39cZj8kpV2yl2rD0e2690HzZhztBP5I6sNsoTSONp/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxustHLMzlpX4HOo6RJSVxrhbQoeh7i_FADLGGe7UssuD1V9HFldBS4E-ei33wuCGxg/exec";
 const REFRESH_INTERVAL_MS = 30000;
 const EMPATHY_AGENT_TARGET = 0.88;   
 const EMPATHY_PARAM_TARGET = 0.875;  
@@ -443,7 +420,6 @@ const isPass = (v) => String(v||'').trim().toLowerCase() === 'pass';
 function el(tag, attrs={}, html=''){ const e=document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); e.innerHTML=html; return e; }
 function groupBy(arr, keyFn){ const m=new Map(); arr.forEach(r=>{const k=keyFn(r); if(!m.has(k)) m.set(k,[]); m.get(k).push(r);}); return m; }
 
-// Robust dynamic key getter (ignores case, spaces, and underscores in headers)
 function getRowVal(row, possibleKeys) {
   if (!row || typeof row !== 'object') return '';
   const rowKeys = Object.keys(row);
@@ -483,7 +459,6 @@ function fmtHoursMin(hoursDecimal){
   return h>0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-// Normalize incoming JSON payload tab names regardless of casing or spelling
 function processPayload(json) {
   const findArray = (...possibleTabNames) => {
     for (const tab of possibleTabNames) {
@@ -524,7 +499,6 @@ function getAlignmentSets() {
 
 function isRosterAgent(agentName, vdiId = '') {
   const { names, vdis } = getAlignmentSets();
-  // If alignment tab is completely missing or empty, fall back to showing everyone
   if (names.size === 0 && vdis.size === 0) return true;
 
   const normName = String(agentName || '').trim().toLowerCase();
@@ -536,7 +510,6 @@ function isRosterAgent(agentName, vdiId = '') {
   return false;
 }
 
-// Map VDI ID to Agent Name from alignment sheet if available
 function getVdiToNameMap() {
   const map = new Map();
   (DATA.alignment || []).forEach(row => {
@@ -659,11 +632,18 @@ function agentAggregates(onlyRoster=false){
     const total = rows.length;
     const pass = rows.filter(r=>isPass(getRowVal(r, ['Pass or Fail', 'Result', 'Pass/Fail']))).length;
     const fail = total - pass;
+    
+    // Critical Error Count
+    const ceCount = rows.filter(r => {
+      const ce = String(getRowVal(r, ['Critical Error', 'Critical', 'CE']) || '').trim().toLowerCase();
+      return ce === 'fail' || ce === 'yes' || (ce !== '' && ce !== 'pass');
+    }).length;
+
     const ep = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Total Emp Parameter Pass Count', 'Emp Pass', 'Empathy Pass'])),0);
     const ef = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Total Emp Parameter Fail Count', 'Emp Fail', 'Empathy Fail'])),0);
     const empPct = (ep+ef)>0 ? ep/(ep+ef) : null;
     const avgScore = rows.reduce((s,r)=>s+numOf(getRowVal(r, ['Evaluation Score', 'Score'])),0) / total;
-    out.push({agent, total, pass, fail, failPct: fail/total, ep, ef, empPct, avgScore});
+    out.push({agent, total, pass, fail, failPct: fail/total, ceCount, ep, ef, empPct, avgScore});
   });
   return out;
 }
@@ -686,48 +666,19 @@ function renderOverview(){
   kpiCard(box, 'Critical Error Free', pct(critFree), critFree>=0.9?'good':'warn', '⚑');
   kpiCard(box, 'Agents Audited', new Set(rows.map(r=>getRowVal(r, ['Agent Name', 'Agent']))).size, 'purple', '☺');
 
-  // Skill bars
-  const skillBox = document.getElementById('ovSkillBars'); skillBox.innerHTML='';
-  const bySkill = groupBy(rows, r=>getRowVal(r, ['Skill'])||'Unknown');
-  const skillEntries = [...bySkill.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
-  if(skillEntries.length===0) skillBox.appendChild(el('div',{class:'empty-note'},'No data.'));
-  const maxSkill = Math.max(1,...skillEntries.map(([,r])=>r.length));
-  skillEntries.forEach(([skill,srows])=>{
-    const row = el('div',{class:'bar-row'});
-    row.appendChild(el('div',{class:'bar-label'},skill));
-    const track = el('div',{class:'bar-track'});
-    track.appendChild(el('div',{class:'bar-fill blue', style:`width:${Math.max(2,(srows.length/maxSkill)*100)}%`}));
-    row.appendChild(track);
-    row.appendChild(el('div',{class:'bar-val'}, srows.length+' · '+pct(srows.filter(r=>isPass(getRowVal(r, ['Pass or Fail']))).length/srows.length)));
-    skillBox.appendChild(row);
-  });
-
-  // Site bars
-  const siteBox = document.getElementById('ovSiteBars'); siteBox.innerHTML='';
-  const bySite = groupBy(rows, r=>getRowVal(r, ['Site'])||'Unknown');
-  const siteEntries = [...bySite.entries()].filter(([s])=>s && s!=='Unknown').sort((a,b)=>b[1].length-a[1].length);
-  if(siteEntries.length===0) siteBox.appendChild(el('div',{class:'empty-note'},'No data.'));
-  const maxSite = Math.max(1,...siteEntries.map(([,r])=>r.length));
-  siteEntries.forEach(([site,srows])=>{
-    const row = el('div',{class:'bar-row'});
-    row.appendChild(el('div',{class:'bar-label'},site));
-    const track = el('div',{class:'bar-track'});
-    track.appendChild(el('div',{class:'bar-fill good', style:`width:${Math.max(2,(srows.length/maxSite)*100)}%`}));
-    row.appendChild(track);
-    row.appendChild(el('div',{class:'bar-val'}, srows.length));
-    siteBox.appendChild(row);
-  });
-
-  // Leaderboards (Roster Filtered)
-  const topScorersBody = document.getElementById('ovTopScorers'); topScorersBody.innerHTML='';
+  // Top CE Holders & Needs Attention (Roster Filtered)
+  const topCeBody = document.getElementById('ovTopCeHolders'); topCeBody.innerHTML='';
   const attentionBody = document.getElementById('ovAttention'); attentionBody.innerHTML='';
   const rosterAggs = agentAggregates(true);
   
-  [...rosterAggs].sort((a,b)=>b.avgScore-a.avgScore).slice(0,8).forEach((a,i)=>{
-    topScorersBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num">${a.avgScore.toFixed(1)}</td><td class="num">${a.total}</td>`));
+  // Render Top CE Holders
+  const ceHolders = [...rosterAggs].filter(a => a.ceCount > 0).sort((a,b) => b.ceCount - a.ceCount);
+  ceHolders.slice(0,8).forEach((a,i)=>{
+    topCeBody.appendChild(el('tr',{},`<td>${i+1}</td><td>${a.agent}</td><td class="num cell-red">${a.ceCount}</td><td class="num">${a.total}</td>`));
   });
-  if(topScorersBody.children.length===0) topScorersBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No roster data matched.</td>`));
+  if(topCeBody.children.length===0) topCeBody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No Critical Errors found 🎉</td>`));
 
+  // Render Needs Attention
   const belowTarget = rosterAggs.filter(a=>a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET).sort((a,b)=>a.empPct-b.empPct);
   belowTarget.slice(0,8).forEach((a,i)=>{
     const shortfall = EMPATHY_AGENT_TARGET - a.empPct;
