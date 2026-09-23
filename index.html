@@ -583,10 +583,10 @@ function kpiCard(container, label, value, iconClass, icon, sub='', subClass=''){
 }
 
 // ============ ALIGNMENT ROSTER FILTER ============
-// Agent-wise listings should only show people present in the "allignment"
+// Agent-wise listings should only show people present in the "alignment"
 // roster tab; team-wide totals (KPI cards) still include everyone.
 function alignmentNameSet(){
-  return new Set(DATA.alignment.map(a=>(a['Name']||'').toString().trim()).filter(Boolean));
+  return new Set(DATA.alignment.map(a=>(a['Name']||a['Agent Name']||'').toString().trim()).filter(Boolean));
 }
 function alignmentVdiSet(){
   return new Set(DATA.alignment.map(a=>(a['VDI ID']||'').toString().trim()).filter(Boolean));
@@ -753,7 +753,7 @@ function renderAgentPage(){
   // table (roster only)
   const tbody = document.getElementById('agentTable'); tbody.innerHTML='';
   const rowsToShow = selected ? rosterAggs.filter(a=>a.agent===selected) : rosterAggs;
-  if(rowsToShow.length===0){ tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No roster agents matched. Check that names in the "allignment" tab match "Agent Name" in "IB agent wise" exactly.</td>`)); return; }
+  if(rowsToShow.length===0){ tbody.appendChild(el('tr',{},`<td colspan="9" class="empty-note">No roster agents matched. Check that names in the "alignment" tab match "Agent Name" in "IB agent wise" exactly.</td>`)); return; }
   [...rowsToShow].sort((a,b)=>(a.empPct??1)-(b.empPct??1)).forEach(a=>{
     const shortfall = a.empPct!==null && a.empPct<EMPATHY_AGENT_TARGET ? EMPATHY_AGENT_TARGET-a.empPct : 0;
     tbody.appendChild(el('tr',{}, `
@@ -798,24 +798,20 @@ function renderEmpathyPage(){
   });
 
   // matrix (roster only)
-  // Updated lookup to prioritize "Agent Name" header from the alignment sheet
   const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Agent Name'] || a['Name']]));
   const allowedVdi = alignmentVdiSet();
   const rosterRows = rows.filter(r => allowedVdi.has((r['VDI ID']||'').toString().trim()));
   const head = document.getElementById('empathyMatrixHead');
   
-  // Added separate headers for VDI ID and Agent Name
   head.innerHTML = '<th>VDI ID</th><th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
   
-  // Updated colspan to 11 to account for the new column
-  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No roster agents matched. Check that VDI IDs in the "allignment" tab match "Empathywise".</td>`)); return; }
+  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No roster agents matched. Check that VDI IDs in the "alignment" tab match "Empathywise".</td>`)); return; }
   
   rosterRows.forEach(r=>{
     const vdi = r['VDI ID'] || '';
     const name = nameMap.get(vdi) || 'Unknown';
-    // Insert both VDI ID and Agent Name into the row cells
     let cells = `<td>${vdi}</td><td>${name}</td>`;
     
     EMPATHY_PARAMS.forEach(p=>{
@@ -847,7 +843,7 @@ function renderAdherencePage(){
   const allowedNamesAdh = alignmentNameSet();
   const rosterRows = rows.filter(r => allowedNamesAdh.has((r['Name']||'').toString().trim()));
   if(rosterRows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No roster agents matched in the "ORT" tab. Check that names in "allignment" match "Name" in "ORT" exactly.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="4" class="empty-note">No roster agents matched in the "ORT" tab. Check that names in "alignment" match "Name" in "ORT" exactly.</td>`));
     return;
   }
   [...rosterRows].sort((a,b)=>(normPct(a['Adherence%'])??1)-(normPct(b['Adherence%'])??1)).forEach(r=>{
@@ -883,7 +879,7 @@ function renderAhtCfsPage(){
   const allowedNamesAht = alignmentNameSet();
   const rosterRows = rows.filter(r => allowedNamesAht.has((r['Name']||'').toString().trim()));
   if(rosterRows.length===0){
-    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No roster agents matched in the "ORT" tab. Check that names in "allignment" match "Name" in "ORT" exactly.</td>`));
+    tbody.appendChild(el('tr',{},`<td colspan="5" class="empty-note">No roster agents matched in the "ORT" tab. Check that names in "alignment" match "Name" in "ORT" exactly.</td>`));
     return;
   }
   rosterRows.forEach(r=>{
