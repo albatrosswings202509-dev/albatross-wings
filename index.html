@@ -372,63 +372,22 @@
       </section>
     </div>
 
-   // ============ EMPATHY ANALYSIS PAGE ============
-const EMPATHY_PARAMS = ['Warm Greetings','Acknowledgment & Understanding','Speech Clarity / Clarity of Communication','Proper Listening','Personalization','Time / Hold Management','Emotional Tone with Courtesy','Closing Courtesy'];
-
-function renderEmpathyPage(){
-  const rows = DATA.empathyWise;
-  const cardBox = document.getElementById('empathyParamCards'); cardBox.innerHTML='';
-  if(rows.length===0){
-    cardBox.appendChild(el('div',{class:'empty-note', style:'grid-column:1/-1;'},
-      `No data returned for the "Empathywise" tab. Check that the tab name in your sheet matches <code>SHEET_NAMES.empathyWise</code> in AppsScript_Code.gs, and that its header row has columns like "VDI ID" and "Audit Count".`));
-  }
-
-  EMPATHY_PARAMS.forEach(param => {
-    let wsum=0, csum=0;
-    rows.forEach(r=>{
-      const audit = numOf(r['Audit Count']);
-      const val = normPct(r[param]);
-      if(audit>0 && val!==null){ wsum += val*audit; csum += audit; }
-    });
-    const avg = csum>0 ? wsum/csum : null;
-    const isRed = avg!==null && avg < EMPATHY_PARAM_TARGET;
-    cardBox.appendChild(el('div',{class:`param-card ${isRed?'red':''}`}, `
-      <div class="pname">${param}</div>
-      <div class="pval">${avg!==null?pct(avg):'—'}</div>
-      <div class="ptarget">target 87.5%</div>
-    `));
-  });
-
-  // matrix (roster only)
-  // Updated lookup to prioritize "Agent Name" header from the alignment sheet
-  const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Agent Name'] || a['Name']]));
-  const allowedVdi = alignmentVdiSet();
-  const rosterRows = rows.filter(r => allowedVdi.has((r['VDI ID']||'').toString().trim()));
-  const head = document.getElementById('empathyMatrixHead');
-  
-  // Added separate headers for VDI ID and Agent Name
-  head.innerHTML = '<th>VDI ID</th><th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
-
-  const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
-  
-  // Updated colspan to 11 to account for the new column
-  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No roster agents matched. Check that VDI IDs in the "allignment" tab match "Empathywise".</td>`)); return; }
-  
-  rosterRows.forEach(r=>{
-    const vdi = r['VDI ID'] || '';
-    const name = nameMap.get(vdi) || 'Unknown';
-    // Insert both VDI ID and Agent Name into the row cells
-    let cells = `<td>${vdi}</td><td>${name}</td>`;
-    
-    EMPATHY_PARAMS.forEach(p=>{
-      const val = normPct(r[p]);
-      if(val===null){ cells += `<td class="num">—</td>`; }
-      else { cells += `<td class="num ${val<EMPATHY_PARAM_TARGET?'cell-red':''}">${pct(val)}</td>`; }
-    });
-    cells += `<td class="num">${r['Audit Count']||0}</td>`;
-    body.appendChild(el('tr',{}, cells));
-  });
-}
+    <!-- ============ EMPATHY ANALYSIS ============ -->
+    <div class="page" id="page-empathy">
+      <section>
+        <div class="section-head"><h2>Empathy Parameter — Overall Pass %</h2><span class="hint">red if below 87.5% target</span></div>
+        <div class="grid-3" id="empathyParamCards" style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;"></div>
+      </section>
+      <section>
+        <div class="section-head"><h2>Agent × Parameter Matrix</h2><span class="hint">cells below 87.5% highlighted red</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr id="empathyMatrixHead"></tr></thead>
+            <tbody id="empathyMatrixBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
 
     <!-- ============ ADHERENCE & BREAK ============ -->
     <div class="page" id="page-adherence">
@@ -839,17 +798,26 @@ function renderEmpathyPage(){
   });
 
   // matrix (roster only)
-  const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Name']]));
+  // Updated lookup to prioritize "Agent Name" header from the alignment sheet
+  const nameMap = new Map(DATA.alignment.map(a=>[a['VDI ID'], a['Agent Name'] || a['Name']]));
   const allowedVdi = alignmentVdiSet();
   const rosterRows = rows.filter(r => allowedVdi.has((r['VDI ID']||'').toString().trim()));
   const head = document.getElementById('empathyMatrixHead');
-  head.innerHTML = '<th>Agent</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
+  
+  // Added separate headers for VDI ID and Agent Name
+  head.innerHTML = '<th>VDI ID</th><th>Agent Name</th>' + EMPATHY_PARAMS.map(p=>`<th>${p.length>18?p.slice(0,16)+'…':p}</th>`).join('') + '<th class="num">Audits</th>';
 
   const body = document.getElementById('empathyMatrixBody'); body.innerHTML='';
-  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="10" class="empty-note">No roster agents matched. Check that VDI IDs in the "allignment" tab match "Empathywise".</td>`)); return; }
+  
+  // Updated colspan to 11 to account for the new column
+  if(rosterRows.length===0){ body.appendChild(el('tr',{},`<td colspan="11" class="empty-note">No roster agents matched. Check that VDI IDs in the "allignment" tab match "Empathywise".</td>`)); return; }
+  
   rosterRows.forEach(r=>{
-    const name = nameMap.get(r['VDI ID']) || r['VDI ID'];
-    let cells = `<td>${name}</td>`;
+    const vdi = r['VDI ID'] || '';
+    const name = nameMap.get(vdi) || 'Unknown';
+    // Insert both VDI ID and Agent Name into the row cells
+    let cells = `<td>${vdi}</td><td>${name}</td>`;
+    
     EMPATHY_PARAMS.forEach(p=>{
       const val = normPct(r[p]);
       if(val===null){ cells += `<td class="num">—</td>`; }
